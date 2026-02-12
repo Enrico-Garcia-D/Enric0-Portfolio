@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Enrico Garcia | Portfolio</title>
+</head>
+<body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <nav>
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      <div class="logo"></div>
+      <div class="nav-links">
+        <a href="#work">Work</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+        <button id="theme-toggle" class="theme-btn">
+          <span class="sun">☀️</span>
+          <span class="moon">🌙</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero fade-in">
+      <div class="hero-content">
+        <p class="greeting">Hi, I am</p>
+        <h1 class="name">Enrico Garcia</h1>
+        <p class="role">Creative Technologist / UI Designer</p>
+        <a href="#" class="btn">Download Resume</a>
+      </div>
+      <div class="profile-circle scale-in"></div>
+    </section>
+
+    <section id="about" class="section fade-in">
+      <h2 class="section-title">About Me</h2>
+      <p class="about-text">
+        I am a Creative Technologist passionate about bridging the gap between design and code. 
+        With a focus on UI/UX, I build functional and beautiful digital experiences.
+      </p>
+    </section>
+
+    <section id="work" class="section fade-in">
+      <h2 class="section-title">Selected Work</h2>
+      <div class="work-grid">
+        <div class="project-card">
+          <div class="project-image"></div>
+          <h3>Project One</h3>
+          <p>UX Design • Mobile App</p>
+        </div>
+        <div class="project-card">
+          <div class="project-image"></div>
+          <h3>Project Two</h3>
+          <p>UI Design • Web Design</p>
+        </div>
+      </div>
+    </section>
+
+    <footer id="contact" class="dark-section fade-in">
+      <h2 class="section-title">Get In Touch</h2>
+      <p>Interested in working together?</p>
+      <a href="mailto:mg04141221058@gmail.com" class="contact-link">mg.04141221058@gmail.com</a>
+    </footer>
+  </main>
+
+  <button id="backToTop" class="back-to-top">↑</button>
+
+  <script src="script.js"></script>
+</body>
+</html>
