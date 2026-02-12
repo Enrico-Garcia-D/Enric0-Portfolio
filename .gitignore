@@ -1,0 +1,11 @@
+# Local environment files (Secrets)
+.env
+*.log
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Editor folders
+.vscode/
+.idea/
