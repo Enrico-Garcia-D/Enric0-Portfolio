@@ -328,6 +328,41 @@ body:not(.dark-mode) .moon { display: block; }
   transition: var(--transition);
 }
 
+.contact-form {
+  max-width: 500px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group input, 
+.form-group textarea {
+  width: 100%;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: var(--transition);
+  box-sizing: border-box;
+}
+
+.form-group input:focus, 
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: rgba(255, 59, 48, 0.05);
+}
+
+.contact-form .btn {
+  width: 100%;
+  border: none;
+  cursor: pointer;
+}
+
 .social-links {
   display: flex;
   justify-content: center;

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
   <link rel="stylesheet" href="styles.css">
   <title>Enrico Garcia | Portfolio</title>
 </head>
+
 <body>
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
@@ -14,7 +16,7 @@
   <nav>
     <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
       <div class="logo"></div>
-      
+
       <div style="display: flex; align-items: center;">
         <div class="nav-links">
           <a href="#work">Work</a>
@@ -34,7 +36,8 @@
       <div class="hero-content">
         <p class="greeting">Hi, I am</p>
         <h1 class="name">Enrico Garcia</h1>
-        <p class="role">Creative Technologist / UI Designer</p>
+        <p class="role">Frontend Developer <span>&bull;</span> Crafting functional interfaces & user-centered
+          experiences</p>
         <a href="assets/Enrico-Garcia-resume.pdf" class="btn">Download Resume</a>
       </div>
       <div class="profile-circle scale-in">
@@ -48,7 +51,7 @@
     <section id="about" class="section fade-in">
       <h2 class="section-title">About Me</h2>
       <p class="about-text">
-        I am a Creative Technologist passionate about bridging the gap between design and code. 
+        I am a Creative Technologist passionate about bridging the gap between design and code.
         With a focus on UI/UX, I build functional and beautiful digital experiences.
       </p>
     </section>
@@ -71,8 +74,20 @@
 
     <footer id="contact" class="dark-section fade-in">
       <h2 class="section-title">Get In Touch</h2>
-      <p>Interested in working together?</p>
-      <a href="mailto:mg04141221058@gmail.com" class="contact-link">mg.04141221058@gmail.com</a>
+      <p>Have a project in mind? Let's build something great together.</p>
+
+      <form action="https://formspree.io/f/your-id" method="POST" class="contact-form">
+        <div class="form-group">
+          <input type="text" name="name" placeholder="Your Name" required>
+        </div>
+        <div class="form-group">
+          <input type="email" name="email" placeholder="Your Email" required>
+        </div>
+        <div class="form-group">
+          <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn">Send Message</button>
+      </form>
 
       <div class="social-links">
         <a href="https://www.facebook.com/migzs.g/" target="_blank" class="social-icon">
@@ -92,4 +107,5 @@
 
   <script src="script.js"></script>
 </body>
+
 </html>
