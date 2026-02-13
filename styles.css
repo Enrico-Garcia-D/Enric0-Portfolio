@@ -467,6 +467,27 @@ body.dark-mode .project-card:hover {
   to { opacity: 1; transform: scale(1); }
 }
 
+.ms-find-slide {
+  background-size: cover;
+  background-position: center;
+  animation: projectSlideshow 12s infinite ease-in-out;
+}
+
+@keyframes projectSlideshow {
+  0%, 30% {
+    background-image: url('assets/msf1.jpg');
+  }
+  33%, 63% {
+    background-image: url('assets/msf2.jpg');
+  }
+  66%, 96% {
+    background-image: url('assets/msf3.jpg');
+  }
+  100% {
+    background-image: url('assets/msf1.jpg');
+  }
+}
+
 @media (max-width: 768px) {
   .hero { flex-direction: column-reverse; text-align: center; padding: 60px 0 20px 0; }
   .hero-content { align-items: center; text-align: center;}
