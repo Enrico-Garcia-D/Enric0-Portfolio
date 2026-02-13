@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
-
 :root {
   --primary: #ff3b30;
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -95,7 +94,6 @@ nav {
   height: 48px;
   background-color: var(--grey);
   border-radius: 50%;
-  transition: var(--transition);
   background-image: url('assets/EG-Logo1.jpg'); 
   background-size: contain;
   background-repeat: no-repeat;
@@ -111,6 +109,11 @@ body.dark-mode .logo {
   box-shadow: 0 0 15px 5px rgba(255, 59, 48, 0.4);
   animation: pulse-glow 3s infinite ease-in-out;
   border: 1px solid rgba(255, 59, 48, 0.3);
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 10px 2px rgba(255, 59, 48, 0.3); }
+  50% { box-shadow: 0 0 20px 8px rgba(255, 59, 48, 0.6); }
 }
 
 .theme-btn {
@@ -177,32 +180,88 @@ body:not(.dark-mode) .moon { display: block; }
   margin-top: 40px;
   padding: 18px 36px;
   background-color: var(--primary);
-  color: var(--bg-gradient);
+  color: white;
   text-decoration: none;
   border-radius: 14px;
   font-weight: 600;
   transition: var(--transition);
 }
 
-body.dark-mode .btn {
-  background-color: var(--primary);
-  color: white;
-}
-
 .btn:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 20px rgba(255, 59, 48, 0.3);
 }
 
 .profile-circle {
+  position: relative;
   width: min(380px, 35vw);
   aspect-ratio: 1/1;
   background-color: var(--grey);
   border-radius: 50%;
   background-image: url('assets/myimg.jpg'); 
-    background-size: cover;
-    background-position: center;
-    border: 4px solid var(--glass-border);
+  background-size: cover;
+  background-position: center;
+  border: 4px solid var(--glass-border);
+  z-index: 2;
+}
+
+.tech-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 45px;
+  height: 45px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  font-size: 1.2rem;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+}
+
+.icon-1 { --move-x: -150px; --move-y: -150px; animation: evenPop 5s infinite 0s; }
+.icon-2 { --move-x: 150px; --move-y: -150px; animation: evenPop 5s infinite 1.25s; }
+.icon-3 { --move-x: -150px; --move-y: 150px; animation: evenPop 5s infinite 2.5s; }
+.icon-4 { --move-x: 150px; --move-y: 150px; animation: evenPop 5s infinite 3.75s; }
+
+@keyframes enhancedPop {
+  0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; filter: blur(10px); }
+  15% { opacity: 1; filter: blur(0px); z-index: 3; }
+  25% { transform: translate(var(--move-x), var(--move-y)) scale(1.2) rotate(360deg); }
+  80% { transform: translate(var(--move-x), var(--move-y)) scale(1) rotate(360deg); opacity: 1; }
+  100% { transform: translate(var(--move-x), var(--move-y)) scale(0) rotate(720deg); opacity: 0; }
+}
+
+@keyframes evenPop {
+  0% { 
+    transform: translate(-50%, -50%) scale(0) rotate(0deg); 
+    opacity: 0; 
+  }
+  /* Stays invisible/faint while "under" the profile circle */
+  30% { 
+    opacity: 0; 
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  /* Pops to 100% visibility exactly as it clears the edges */
+  45% { 
+    opacity: 1; 
+    z-index: 3;
+  }
+  80% { 
+    transform: translate(var(--move-x), var(--move-y)) scale(1) rotate(360deg); 
+    opacity: 1; 
+  }
+  100% { 
+    transform: translate(var(--move-x), var(--move-y)) scale(0) rotate(720deg); 
+    opacity: 0; 
+  }
 }
 
 .section {
@@ -257,21 +316,6 @@ body.dark-mode .btn {
   transition: var(--transition);
 }
 
-.back-to-top {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 50px;
-  height: 50px;
-  background-color: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  display: none;
-  z-index: 1001;
-}
-
 .social-links {
   display: flex;
   justify-content: center;
@@ -289,7 +333,7 @@ body.dark-mode .btn {
   color: var(--text-color);
   text-decoration: none;
   border-radius: 50%;
-  font-size: 1.2rem; /* Adjusted for icons */
+  font-size: 1.2rem;
   border: 1px solid var(--glass-border);
   transition: var(--transition);
 }
@@ -300,9 +344,19 @@ body.dark-mode .btn {
   transform: translateY(-5px);
 }
 
-body.dark-mode .social-icon {
-  background: var(--glass-bg);
-  color: var(--text-color);
+.back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: none;
+  z-index: 1001;
 }
 
 .fade-in { animation: fadeIn 1s ease-out forwards; }
@@ -318,100 +372,16 @@ body.dark-mode .social-icon {
   to { opacity: 1; transform: scale(1); }
 }
 
-@keyframes pulse-glow {
-  0% {
-    box-shadow: 0 0 10px 2px rgba(255, 59, 48, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 20px 8px rgba(255, 59, 48, 0.6);
-  }
-  100% {
-    box-shadow: 0 0 10px 2px rgba(255, 59, 48, 0.3);
-  }
-}
-
 @media (max-width: 768px) {
-  /* 1. Fix Hero layout */
-  .hero { 
-    flex-direction: column-reverse; 
-    text-align: center; 
-    justify-content: center;
-    min-height: auto;
-    padding: 60px 0 20px 0;
-    gap: 20px;
-  }
-  
-  .hero-content { 
-    align-items: center; 
-    width: 100%;
-  }
-
-  /* 2. Scale down typography for small screens */
-  .name {
-    font-size: 2.8rem; 
-    letter-spacing: -1px;
-  }
-
-  .role {
-    font-size: 1.1rem;
-    margin-top: 8px;
-  }
-
-  .profile-circle {
-    width: 180px;
-    height: 180px;
-    margin: 0 auto;
-  }
-
-  /* 4. Fix Section Spacing */
-  .section {
-    padding: 40px 20px; /* Less side padding so glass box has room */
-    margin: 20px 0;
-    border-radius: 20px;
-  }
-
-  .section-title {
-    font-size: 1.4rem;
-    margin-bottom: 25px;
-  }
-
-  /* 5. Handle Navigation */
-  .nav-links { 
-    display: none; 
-  }
-
-  nav {
-    padding: 15px 5%;
-  }
-
-  .theme-btn {
-    margin-left: 0;
-    width: 35px;
-    height: 35px;
-  }
-
-  /* 6. Fix Project Cards */
-  .work-grid {
-    grid-template-columns: 1fr; /* Force single column */
-    gap: 20px;
-  }
-
-  .project-card h3 {
-    font-size: 1.2rem;
-  }
-
-  /* 7. Footer Contact Text */
-  .contact-link {
-    font-size: 1.1rem; /* Prevents long emails from breaking the layout */
-    word-break: break-all;
-  }
-
-  .social-links {
-    gap: 15px;
-  }
-  
-  .social-icon {
-    width: 45px;
-    height: 45px;
-  }
+  .hero { flex-direction: column-reverse; text-align: center; padding: 60px 0 20px 0; }
+  .hero-content { align-items: center; }
+  .name { font-size: 2.8rem; }
+  .profile-circle { width: 180px; height: 180px; margin: 0 auto; }
+  .tech-icon { width: 35px; height: 35px; font-size: 1rem; }
+  .icon-1 { --move-x: -100px; --move-y: -100px; }
+  .icon-2 { --move-x: 100px; --move-y: -90px; }
+  .icon-3 { --move-x: -110px; --move-y: 70px; }
+  .icon-4 { --move-x: 90px; --move-y: 100px; }
+  .nav-links { display: none; }
+  .contact-link { font-size: 1.1rem; word-break: break-all; }
 }
