@@ -149,6 +149,8 @@ body:not(.dark-mode) .moon { display: block; }
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  text-align: left;
+  width: 100%;
 }
 
 .greeting {
@@ -279,8 +281,18 @@ body:not(.dark-mode) .moon { display: block; }
   font-size: 2rem;
   margin-bottom: 40px;
   border-bottom: 2px solid var(--grey);
-  display: inline-block;
+  display: block;      /* Changed from inline-block */
+  width: fit-content;  /* Makes the border only as wide as the text */
+  margin-left: auto;   /* Centers the block horizontally */
+  margin-right: auto;
   padding-bottom: 10px;
+  text-align: center;
+}
+
+.about-text {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .work-grid {
@@ -374,7 +386,7 @@ body:not(.dark-mode) .moon { display: block; }
 
 @media (max-width: 768px) {
   .hero { flex-direction: column-reverse; text-align: center; padding: 60px 0 20px 0; }
-  .hero-content { align-items: center; }
+  .hero-content { align-items: center; text-align: center;}
   .name { font-size: 2.8rem; }
   .profile-circle { width: 180px; height: 180px; margin: 0 auto; }
   .tech-icon { width: 35px; height: 35px; font-size: 1rem; }
