@@ -111,8 +111,10 @@ nav {
   justify-content: space-between;
   align-items: center;
   padding: 15px 5%;
-  position: sticky;
+  position: fixed;
+  width: 100%;
   top: 0;
+  left: 0;
   background: var(--nav-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
