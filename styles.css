@@ -11,6 +11,7 @@ html {
   scroll-behavior: smooth;
   overflow-x: hidden; 
   width: 100%;
+  scroll-padding-top: 100px; 
 }
 
 /* =========================================
@@ -222,9 +223,9 @@ body.dark-mode .moon { display: none; }
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-height: 85vh;
+  min-height: 100vh;
   gap: 40px;
-  padding: 40px 0;
+  padding: 120px 0 60px 0; 
 }
 
 .hero-content {
@@ -732,13 +733,13 @@ body.dark-mode .download-icon-btn {
 }
 
 @media (max-width: 768px) {
-  .btn:hover, .project-card:hover { transform: none; }
-  
+  .btn:hover, .project-card:hover { 
+    transform: none; }
   .hero {
     flex-direction: column-reverse;
     text-align: center;
     justify-content: center;
-    padding: 20px 0;
+    padding: 110px 0 40px 0; 
     gap: 30px;
   }
   
