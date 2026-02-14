@@ -9,6 +9,8 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden; 
+  width: 100%;
 }
 
 /* =========================================
@@ -68,6 +70,7 @@ body {
   overflow-x: hidden;
   transition: background 0.4s ease, color 0.4s ease;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 :focus-visible {
@@ -298,7 +301,6 @@ body.dark-mode .moon { display: none; }
   box-shadow: 0 20px 40px rgba(0,0,0,0.1);
 }
 
-
 .tech-icon {
   position: absolute;
   top: 50%;
@@ -370,7 +372,7 @@ body.dark-mode .moon { display: none; }
 
 .work-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 30px;
   width: 100%;
   margin-top: 30px;
@@ -663,23 +665,126 @@ body.dark-mode .download-icon-btn {
 
   /* Mobile Icon Adjustments */
   .tech-icon {
-    width: 35px;
-    height: 35px;
-    margin-top: -17.5px;
-    margin-left: -17.5px;
-    font-size: 1rem;
+    width: 40px;
+    height: 40px;
+    margin-top: -20px;
+    margin-left: -20px;
+    font-size: 1.1rem;
   }
 
-  .icon-1 { --move-x: 0px;   --move-y: -130px; }
-  .icon-2 { --move-x: 92px;  --move-y: -92px; }
-  .icon-3 { --move-x: 130px; --move-y: 0px; }
-  .icon-4 { --move-x: 92px;  --move-y: 92px; }
-  .icon-5 { --move-x: 0px;   --move-y: 130px; }
-  .icon-6 { --move-x: -92px; --move-y: 92px; }
-  .icon-7 { --move-x: -130px;--move-y: 0px; }
-  .icon-8 { --move-x: -92px; --move-y: -92px; }
+  .icon-1 { --move-x: 0px;   --move-y: -160px; }
+  .icon-2 { --move-x: 113px; --move-y: -113px; }
+  .icon-3 { --move-x: 160px; --move-y: 0px; }
+  .icon-4 { --move-x: 113px; --move-y: 113px; }
+  .icon-5 { --move-x: 0px;   --move-y: 160px; }
+  .icon-6 { --move-x: -113px; --move-y: 113px; }
+  .icon-7 { --move-x: -160px; --move-y: 0px; }
+  .icon-8 { --move-x: -113px; --move-y: -113px; }
 
   .nav-links { display: none; }
   .section { padding: 60px 20px; }
   .contact-link { font-size: 1.2rem; word-break: break-all; }
+}
+
+/* --- Tablets & Laptops (Max 1024px) --- */
+@media (max-width: 1024px) {
+  .hero {
+    gap: 20px;
+  }
+  
+  .profile-circle {
+    width: 320px; 
+    height: 320px;
+  }
+}
+
+/* --- Large Desktop Screens (1440px+) --- */
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1400px; 
+    padding: 0 40px;
+  }
+  
+  .name {
+    font-size: 6rem; 
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+  }
+
+  .about-text {
+    font-size: 1.25rem;
+    max-width: 1000px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 20px;
+  }
+
+  .nav {
+    padding: 15px 20px;
+  }
+
+  .logo-text {
+    font-size: 1.2rem;
+  }
+
+  .name {
+    font-size: 2.5rem; /* Fits 6.1 inch screens better */
+  }
+
+  .role {
+    font-size: 1.1rem;
+  }
+
+  /* Profile Circle: Fits comfortably on 360px-390px width */
+  .profile-circle {
+    width: 200px;
+    height: 200px;
+    border-width: 3px;
+  }
+
+  .section {
+    padding: 40px 20px;
+    margin: 40px 0;
+  }
+
+  .section-title {
+    font-size: 1.75rem;
+    margin-bottom: 30px;
+  }
+
+  .contact-link {
+    font-size: 1.2rem;
+    word-break: break-all; /* Prevents long emails from breaking layout */
+  }
+
+  /* --- Mobile Orbit Optimization --- 
+     Calculated to ensure icons don't get cut off on 375px-390px screens 
+     Radius reduced to ~125px */
+  .tech-icon {
+    width: 34px;
+    height: 34px;
+    margin-top: -17px;
+    margin-left: -17px;
+    font-size: 0.9rem;
+  }
+
+  .icon-1 { --move-x: 0px;   --move-y: -125px; }
+  .icon-2 { --move-x: 88px;  --move-y: -88px; }
+  .icon-3 { --move-x: 125px; --move-y: 0px; }
+  .icon-4 { --move-x: 88px;  --move-y: 88px; }
+  .icon-5 { --move-x: 0px;   --move-y: 125px; }
+  .icon-6 { --move-x: -88px; --move-y: 88px; }
+  .icon-7 { --move-x: -125px; --move-y: 0px; }
+  .icon-8 { --move-x: -88px; --move-y: -88px; }
+  
+  /* Stack buttons on small screens if needed */
+  .project-header {
+    flex-direction: row; /* Keep row but ensure gap */
+    gap: 10px;
+  }
 }
