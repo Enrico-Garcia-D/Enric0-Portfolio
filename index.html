@@ -1,199 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="styles.css">
-  <title>Enrico Garcia | Portfolio</title>
-</head>
-
-<body>
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-
-  <nav>
-    <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-      <a href="#" class="logo">
-        <span class="logo-text">EG</span>
-      </a>
-
-      <div style="display: flex; align-items: center;">
-        <div class="nav-links">
-          <a href="#work">Work</a>
-          <a href="#about">About</a>
-          <a href="#contact">Contact</a>
-        </div>
-        <button id="theme-toggle" class="theme-btn">
-          <span class="sun">☀️</span>
-          <span class="moon">🌙</span>
-        </button>
-      </div>
-    </div>
-  </nav>
-
-  <main class="container">
-    <section class="hero fade-in">
-      <div class="hero-content">
-        <p class="greeting">Hi, I am</p>
-        <h1 class="name">Enrico Garcia</h1>
-        <p class="role">Adaptive Technologists <span>&bull;</span> Bridging design, logic, and infrastructure</p>
-        <a href="assets/Enrico-Garcia-resume.pdf" class="btn">Download Resume</a>
-      </div>
-
-      <div class="profile-circle scale-in">
-        <div class="tech-icon icon-1"><i class="fa-brands fa-html5"></i></div>
-        <div class="tech-icon icon-2"><i class="fa-brands fa-css3-alt"></i></div>
-        <div class="tech-icon icon-3"><i class="fa-brands fa-js"></i></div>
-        <div class="tech-icon icon-4"><i class="fa-brands fa-react"></i></div>
-        <div class="tech-icon icon-5"><i class="fa-display">K</i></div>
-        <div class="tech-icon icon-6"><i class="fa-brands fa-figma"></i></div>
-        <div class="tech-icon icon-7"><i class="fa-solid fa-hashtag"></i></div>
-        <div class="tech-icon icon-8"><i class="fa-brands fa-unity"></i></div>
-      </div>
-    </section>
-
-    <section id="about" class="section fade-in">
-      <div class="about-content-wrapper">
-
-        <!-- Left Column: The Story -->
-        <div class="about-bio">
-          <h2 class="section-title" style="margin-left: 0; width: auto; text-align: left;">About Me</h2>
-
-          <p class="about-text" style="text-align: left; margin: 0;">
-            I consider myself a <span class="highlight">Digital Architect</span>.
-            <br><br>
-            My journey began with a dream of becoming an Architect, designing physical structures. However, I discovered
-            that <b>Computer Science</b> offers the same creative freedom—building robust systems without the limits of
-            gravity.
-            <br><br>
-            As a graduating <b>BSCS student</b>, my greatest strength is <span class="highlight">adaptability</span>. I
-            don't just stick to one lane; I move fluidly between <b>Frontend (React)</b> and <b>Backend</b> logic, and
-            I'm comfortable diving into both software and hardware.
-            <br><br>
-            I am currently open to <span class="highlight">Full-time roles, Freelance, and Open Source</span>
-            collaborations where I can apply my skills and continue mastering future tech stacks.
-          </p>
-
-          <!-- Stats / Key Highlights -->
-          <div class="about-stats">
-            <div class="stat-item">
-              <span class="stat-num">BSCS</span>
-              <span class="stat-label">Graduating Soon</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-num">100%</span>
-              <span class="stat-label">Adaptable</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-num">Full</span>
-              <span class="stat-label">Stack Ready</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right Column: The Dynamic Stack -->
-        <div class="about-skills">
-          <h3 class="skill-title">Tech & Tools</h3>
-          <div class="skill-tags">
-            <!-- Core -->
-            <span class="skill-tag">React.js</span>
-            <span class="skill-tag">JavaScript (ES6+)</span>
-            <span class="skill-tag">HTML5 & CSS3</span>
-
-            <!-- Backend / Data -->
-            <span class="skill-tag">Node.js</span>
-            <span class="skill-tag">SQL / Database</span>
-            <span class="skill-tag">REST APIs</span>
-
-            <!-- Tools & Concepts -->
-            <span class="skill-tag">Git & GitHub</span>
-            <span class="skill-tag">Hardware Troubleshooting</span>
-            <span class="skill-tag">Agile / Scrum</span>
-
-            <!-- Soft Skills -->
-            <span class="skill-tag highlight-tag">Rapid Learning</span>
-            <span class="skill-tag highlight-tag">Problem Solving</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="work" class="section fade-in">
-      <h2 class="section-title">Selected Work</h2>
-      <div class="work-grid">
-
-        <a href="https://github.com/Enrico-Garcia-D/MS-FIND-APP" target="_blank" class="card-link">
-          <div class="project-card">
-            <div class="project-image ms-find-slide"></div>
-            <div class="project-header">
-              <div class="project-info">
-                <h3>MS FIND</h3>
-                <p>AR • Voice • Mobile App</p>
-              </div>
-              <button
-                onclick="event.stopPropagation(); window.location.href='https://github.com/Enrico-Garcia-D/MS-FIND-APP/releases/download/v1.0.0-beta/MS-FIND-Final.apk'"
-                class="download-icon-btn" title="Download APK">
-                <i class="fa-solid fa-file-arrow-down"></i>
-              </button>
-            </div>
-          </div>
-        </a>
-
-        <a href="https://github.com/Enrico-Garcia-D/ClassTrack_v2" target="_blank" class="card-link">
-          <div class="project-card">
-            <div class="project-image" style="background-image: url('assets/CTimg.jpg');"></div>
-            <div class="project-header">
-              <div class="project-info">
-                <h3>ClassTrack 2.0</h3>
-                <p>UI Design • Mobile App</p>
-              </div>
-              <button
-                onclick="event.stopPropagation(); window.location.href='https://github.com/Enrico-Garcia-D/ClassTrack_v2/releases/download/0.2.0/ClassTrack.apk'"
-                class="download-icon-btn" title="Download APK">
-                <i class="fa-solid fa-file-arrow-down"></i>
-              </button>
-            </div>
-          </div>
-        </a>
-      </div>
-    </section>
-
-    <footer id="contact" class="dark-section fade-in">
-      <h2 class="section-title">Get In Touch</h2>
-      <p>Have a project in mind? Let's build something great together.</p>
-
-      <form action="https://formspree.io/f/xpqjpkby" method="POST" class="contact-form">
-        <div class="form-group">
-          <input type="text" name="name" placeholder="Your Name" required>
-        </div>
-        <div class="form-group">
-          <input type="email" name="email" placeholder="Your Email" required>
-        </div>
-        <div class="form-group">
-          <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
-        </div>
-        <button type="submit" class="btn">Send Message</button>
-      </form>
-
-      <div class="social-links">
-        <a href="https://www.facebook.com/migzs.g/" target="_blank" class="social-icon">
-          <i class="fa-brands fa-facebook-f"></i>
-        </a>
-        <a href="https://www.linkedin.com/in/enrico-miguel-garcia-092101286/" target="_blank" class="social-icon">
-          <i class="fa-brands fa-linkedin-in"></i>
-        </a>
-        <a href="https://github.com/Enrico-Garcia-D" target="_blank" class="social-icon">
-          <i class="fa-brands fa-github"></i>
-        </a>
-      </div>
-    </footer>
-  </main>
-
-  <button id="backToTop" class="back-to-top">↑</button>
-
-  <script src="script.js"></script>
-</body>
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Enrico Garcia — adaptive technologist bridging design, logic, and infrastructure." />
+    <title>Enrico Garcia | Portfolio</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Enrico Garcia | Portfolio" />
+    <meta property="og:description" content="Adaptive technologist bridging design, logic, and infrastructure." />
+    <meta property="og:url" content="https://enrico-garcia-d.github.io/Enric0-Portfolio/" />
+    <meta property="og:image" content="https://enrico-garcia-d.github.io/Enric0-Portfolio/assets/EG-Logo1.jpg" />
+    <meta name="twitter:card" content="summary" />
+    <script>
+      try {
+        if (localStorage.getItem('theme') === 'dark') document.documentElement.dataset.theme = 'dark'
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

@@ -9,3 +9,7 @@ Thumbs.db
 # Editor folders
 .vscode/
 .idea/
+# Build / deps
+node_modules/
+dist/
+*.tsbuildinfo
