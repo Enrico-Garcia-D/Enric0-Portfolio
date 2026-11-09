@@ -305,8 +305,9 @@ body { padding-left: var(--rail); }
 /* About */
 .about-content-wrapper {
   display: grid;
-  grid-template-columns: 1.6fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 80px;
+  align-items: center;
 }
 
 .about-text {
@@ -335,35 +336,42 @@ body { padding-left: var(--rail); }
 /* Tech & tools as randomized IC packages */
 .about-tools { margin-top: 64px; }
 
-/* Carousel: arrows either side of a snapping row of chips, six per page on wide screens */
-.chip-carousel {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 42px; /* with the padding below, leaves room above the row for the trace bus lines */
+/* Continuous marquee: two identical sets slide left by exactly one set's width, then loop */
+.chip-marquee {
+  margin-top: 12px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
 
-.chip-arrow { flex: none; }
+.chip-track {
+  display: flex;
+  width: max-content;
+  animation: chip-scroll 40s linear infinite;
+}
+
+.chip-marquee:hover .chip-track,
+.chip-marquee:focus-within .chip-track { animation-play-state: paused; }
+
+@keyframes chip-scroll {
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip-marquee { overflow-x: auto; }
+  .chip-track { animation: none; }
+}
 
 .chip-grid {
   list-style: none;
   display: flex;
   flex: none;
-  min-width: 0;
-  max-width: 100%;
-  gap: 2px 4px;
+  gap: 4px;
   margin: 0;
-  /* top room keeps the name tooltip and hover scale inside the scroll box */
-  padding: 30px 0 6px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
+  padding: 30px 4px 6px 0; /* top room keeps the name tooltip and hover scale visible; right pad = gap, for a seamless loop */
 }
 
-.chip-grid::-webkit-scrollbar { display: none; }
-
-.chip-item { display: block; flex: none; scroll-snap-align: start; }
+.chip-item { display: block; flex: none; }
 
 .chip {
   position: relative;
@@ -533,96 +541,30 @@ body { padding-left: var(--rail); }
 .carousel-arrow:hover:not(:disabled) { background: var(--text); color: var(--bg); }
 .carousel-arrow:disabled { opacity: 0.35; cursor: default; }
 
-/* Circuit traces: glowing lines from the CPU (portrait) down to every tech chip */
 .about-board { position: relative; }
-.about-board > .about-content-wrapper,
-.about-board > .about-tools { position: relative; z-index: 1; }
-
-.traces { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 0; overflow: visible; }
-.traces-glow { filter: drop-shadow(0 0 2px rgba(59, 155, 255, 0.85)); }
-.trace-base { fill: none; stroke: rgba(59, 155, 255, 0.55); stroke-width: 1; }
-.trace-pulse {
-  fill: none;
-  stroke: #9fd8ff;
-  stroke-width: 1.4;
-  stroke-linecap: round;
-  stroke-dasharray: 7 93;
-  animation: trace-flow 3.4s linear infinite;
-}
-
-@keyframes trace-flow {
-  from { stroke-dashoffset: 7; }
-  to { stroke-dashoffset: -93; }
-}
-
-/* The package is clipped, so the glow lives on a wrapper */
-.cpu-glow {
-  max-width: 280px;
-  margin-bottom: 40px;
-  filter: drop-shadow(0 0 8px rgba(59, 155, 255, 0.55));
-  animation: cpu-pulse 2.8s ease-in-out infinite;
-}
-
-@keyframes cpu-pulse {
-  0%, 100% { filter: drop-shadow(0 0 6px rgba(59, 155, 255, 0.4)); }
-  50% { filter: drop-shadow(0 0 16px rgba(59, 155, 255, 0.95)); }
-}
 
 @media (prefers-reduced-motion: reduce) {
-  .gpu-card { transform: none; opacity: 1; }
-  .gpu .cell { opacity: 1; transition: none; }
-  .trace-pulse, .cpu-glow { animation: none; }
-  .trace-pulse { stroke-dasharray: none; opacity: 0.35; }
 }
 
-/* The portrait is the main CPU: substrate with edge contact pads, a heat spreader, and a pin-1 marker. */
-.cpu {
-  --pad: #c9a24b;
-  position: relative;
+/* Portrait: large, with layered studio-style shadowing */
+/* Shadow sits on the frame so the sketch filter on the image doesn't wash it out */
+.about-frame {
   width: 100%;
-  max-width: 280px;
-  aspect-ratio: 1;
-  padding: 30px;
-  background:
-    /* contact pads along each edge, inset from the corners */
-    repeating-linear-gradient(90deg, var(--pad) 0 5px, transparent 5px 10px) 22px 7px / calc(100% - 44px) 10px no-repeat,
-    repeating-linear-gradient(90deg, var(--pad) 0 5px, transparent 5px 10px) 22px calc(100% - 7px) / calc(100% - 44px) 10px no-repeat,
-    repeating-linear-gradient(0deg, var(--pad) 0 5px, transparent 5px 10px) 7px 22px / 10px calc(100% - 44px) no-repeat,
-    repeating-linear-gradient(0deg, var(--pad) 0 5px, transparent 5px 10px) calc(100% - 7px) 22px / 10px calc(100% - 44px) no-repeat,
-    linear-gradient(135deg, #23282a, #14181a);
-  border: 1px solid #3a4144;
-  /* chamfered corners like a real package */
-  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-}
-
-.cpu-pin1 {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  width: 14px;
-  height: 14px;
-  background: var(--pad);
-  clip-path: polygon(0 0, 100% 0, 0 100%);
-  z-index: 2;
-}
-
-/* Heat spreader: beveled metal lid around the die */
-.cpu-ihs {
-  width: 100%;
-  height: 100%;
-  padding: 6px;
-  background: linear-gradient(135deg, #e4e8ea, #8d969a 45%, #cfd5d8);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.5);
+  max-width: 460px;
+  margin-left: auto;
+  line-height: 0;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.18),
+    0 8px 16px rgba(0, 0, 0, 0.2),
+    0 24px 48px rgba(0, 0, 0, 0.28),
+    0 48px 96px rgba(0, 0, 0, 0.22);
 }
 
 .about-photo {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: grayscale(1);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+  height: auto;
+  filter: url(#pencil-sketch) contrast(1.15);
 }
 
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
@@ -994,139 +936,98 @@ body { padding-bottom: 32px; }
 .gh-note a { color: var(--text); }
 .gh-profile { display: inline-block; margin-top: 24px; }
 
-/* Graphics card (RTX 5090 Founders Edition style): titanium frame, two ribbed panels, X center. */
-.gpu,
-.gpu-plate { --gpu-green: #76b900; }
-
-.gpu {
-  position: relative;
+/* Contribution panel, recreated from github.com's profile graph */
+.gh-panel {
+  --gh-0: #ebedf0; --gh-1: #9be9a8; --gh-2: #40c463; --gh-3: #30a14e; --gh-4: #216e39;
+  --gh-border: #d0d7de; --gh-fg: #1f2328; --gh-muted: #656d76; --gh-bg: #ffffff;
   display: flex;
-  align-items: stretch;
-  max-width: 920px;
-  filter: drop-shadow(0 14px 14px rgba(0, 0, 0, 0.28));
+  align-items: flex-start;
+  gap: 16px;
+  max-width: 1100px;
+  color: var(--gh-fg);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
 }
 
-/* The card is drawn as one SVG; the two contribution grids sit on top of its dark panels. */
-.gpu-card {
-  position: relative;
-  flex: 1;
-  min-width: 0;
-  aspect-ratio: 1500 / 710;
-  /* Scroll transition: the card starts tilted back and low, and comes upright as it scrolls in */
-  transform-origin: 50% 100%;
-  transform: perspective(1400px) rotateX(calc((1 - var(--p, 1)) * 38deg)) translateY(calc((1 - var(--p, 1)) * 70px)) scale(calc(0.9 + var(--p, 1) * 0.1));
-  opacity: calc(0.25 + var(--p, 1) * 0.75);
+:root[data-theme='dark'] .gh-panel {
+  --gh-0: #161b22; --gh-1: #0e4429; --gh-2: #006d32; --gh-3: #26a641; --gh-4: #39d353;
+  --gh-border: #30363d; --gh-fg: #e6edf3; --gh-muted: #8d96a0; --gh-bg: #0d1117;
 }
 
-.gpu-art { position: absolute; inset: 0; width: 100%; height: 100%; }
+.gh-main { flex: 1; min-width: 0; }
+.gh-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.gh-title { margin: 0; font-size: 18px; font-weight: 400; color: var(--gh-fg); }
 
-.gpu-grid {
-  position: absolute;
-  top: 58.7%;
-  width: 34%;
-  box-sizing: border-box;
-  padding: 6px 7px 8px;
-  transform: translateY(-50%);
-  /* A dark glass window so the squares read against the ribbing */
-  background: rgba(4, 5, 6, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 3px;
-  box-shadow: inset 0 1px 6px rgba(0, 0, 0, 0.7);
+.gh-settings { position: relative; }
+.gh-settings-btn { background: none; border: 0; padding: 4px 8px; font: inherit; font-size: 14px; color: var(--gh-muted); cursor: pointer; }
+.gh-settings-btn:hover { color: var(--gh-fg); }
+.gh-menu {
+  position: absolute; right: 0; top: 100%; z-index: 30; min-width: 230px; padding: 6px 0;
+  background: var(--gh-bg); border: 1px solid var(--gh-border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
+.gh-menu a { display: block; padding: 6px 16px; font-size: 14px; color: var(--gh-fg); text-decoration: none; }
+.gh-menu a:hover { background: color-mix(in srgb, var(--gh-fg) 8%, transparent); }
 
-.gpu-grid.left { left: 7.3%; }
-.gpu-grid.right { left: 60%; }
+.gh-box { padding: 16px 20px 12px; background: var(--gh-bg); border: 1px solid var(--gh-border); border-radius: 6px; }
 
-/* Contribution grid: weeks across, weekdays down, columns share the width evenly. */
-.gpu .heat {
+.gh-years { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; width: 96px; flex: none; }
+.gh-years button {
+  width: 100%; padding: 8px 14px; text-align: left; font: inherit; font-size: 14px; cursor: pointer;
+  color: var(--gh-muted); background: none; border: 0; border-radius: 6px;
+}
+.gh-years button:hover { background: color-mix(in srgb, var(--gh-fg) 8%, transparent); color: var(--gh-fg); }
+.gh-years button.on { background: #1f6feb; color: #fff; }
+
+.gh-scroll { overflow-x: auto; padding-bottom: 4px; }
+
+.gh-heat {
   display: grid;
-  grid-template-columns: repeat(var(--weeks, 53), minmax(5px, 1fr));
-  grid-template-rows: 12px;
-  gap: 2px;
-  width: 100%;
+  grid-template-columns: 36px repeat(var(--weeks, 53), 12px);
+  grid-template-rows: 20px repeat(7, 12px);
+  gap: 3px;
+  width: max-content;
+  min-width: 100%;
+  font-size: 14px;
+  color: var(--gh-fg);
 }
 
-.gpu .heat-month { grid-row: 1; font: 0.58rem/12px var(--mono); color: #6f7a74; white-space: nowrap; }
+.gh-month { grid-row: 1; overflow: visible; white-space: nowrap; line-height: 14px; }
+.gh-day { grid-column: 1; font-size: 14px; line-height: 12px; }
 
-.gpu .cell {
-  width: auto;
-  height: auto;
-  aspect-ratio: 1;
-  align-self: start;
-  background: #232a27;
-  /* powered off until the card is in view, then lit left to right */
-  opacity: 0.15;
-  transition: opacity 0.45s ease;
-  transition-delay: calc(var(--c, 0) * 22ms);
+.gh-cell {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--gh-0);
+  outline: 1px solid rgba(27, 31, 35, 0.06);
+  outline-offset: -1px;
 }
-.gpu.on .cell { opacity: 1; }
-.gpu:not(.on) .cell { transition-delay: 0s; }
-.gpu .cell.l1 { background: color-mix(in srgb, var(--gpu-green) 30%, #232a27); }
-.gpu .cell.l2 { background: color-mix(in srgb, var(--gpu-green) 55%, #232a27); }
-.gpu .cell.l3 { background: color-mix(in srgb, var(--gpu-green) 80%, #232a27); }
-.gpu .cell.l4 { background: var(--gpu-green); box-shadow: 0 0 5px rgba(118, 185, 0, 0.6); }
+:root[data-theme='dark'] .gh-cell { outline-color: rgba(255, 255, 255, 0.05); }
+.gh-cell.l1 { background: var(--gh-1); }
+.gh-cell.l2 { background: var(--gh-2); }
+.gh-cell.l3 { background: var(--gh-3); }
+.gh-cell.l4 { background: var(--gh-4); }
 
-/* Phones: the card art is too small to hold readable grids, so the full-year grid scrolls in a plain panel. */
-.gpu-mobile {
-  display: none;
-  flex: 1;
-  min-width: 0;
-  padding: 5px;
-  border-radius: 16px;
-  background: linear-gradient(145deg, #b6aa9b, #6a6157 40%, #a39786 70%, #544e47);
-}
-
-.gpu-mobile-in {
-  padding: 14px;
-  border-radius: 12px;
-  overflow-x: auto;
-  background:
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 3px),
-    #0b0c0d;
-}
-
-.gpu-mobile .heat { width: 100%; min-width: calc(var(--weeks, 53) * 8px); }
-
-/* Spec plate under the card */
-.gpu-plate {
+.gh-foot {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
   gap: 8px 24px;
-  max-width: 840px;
-  margin-top: 14px;
-  padding-left: 12px;
-  font: 0.75rem var(--mono);
-  color: var(--muted);
+  margin-top: 8px;
+  padding-left: 36px;
+  font-size: 14px;
+  color: var(--gh-muted);
 }
-
-.gpu-plate .heat-stats b { color: var(--text); font-weight: 600; }
-.gpu-plate .cell { display: inline-block; width: 10px; height: 10px; background: #232a27; }
-.gpu-plate .cell.l1 { background: color-mix(in srgb, var(--gpu-green) 30%, #232a27); }
-.gpu-plate .cell.l2 { background: color-mix(in srgb, var(--gpu-green) 55%, #232a27); }
-.gpu-plate .cell.l3 { background: color-mix(in srgb, var(--gpu-green) 80%, #232a27); }
-.gpu-plate .cell.l4 { background: var(--gpu-green); }
-
-.cell { display: inline-block; width: 11px; height: 11px; background: var(--line); }
-.cell.pad { visibility: hidden; }
-.cell.l1 { background: color-mix(in srgb, var(--blue) 30%, var(--line)); }
-.cell.l2 { background: color-mix(in srgb, var(--blue) 55%, var(--line)); }
-.cell.l3 { background: color-mix(in srgb, var(--blue) 80%, var(--line)); }
-.cell.l4 { background: var(--blue); }
-
-.heat-foot {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 8px 24px;
-  padding: 8px 14px 14px;
-  font: 0.75rem var(--mono);
-  color: var(--muted);
+.gh-foot a { color: var(--gh-muted); text-decoration: none; }
+.gh-foot a:hover { color: #0969da; text-decoration: underline; }
+.gh-legend { display: flex; align-items: center; gap: 4px; }
+@media (max-width: 700px) {
+  .gh-panel { flex-direction: column-reverse; }
+  .gh-years { flex-direction: row; width: auto; flex-wrap: wrap; }
+  .gh-years button { width: auto; }
 }
-
-.heat-stats { display: flex; flex-wrap: wrap; gap: 4px 20px; }
-.heat-stats b { color: var(--text); font-weight: 600; }
-.heat-legend { display: flex; align-items: center; gap: 4px; }
+.gh-streak { margin: 8px 0 0; font-size: 12px; color: var(--gh-muted); }
 
 .repo-list {
   display: grid;
@@ -1238,9 +1139,6 @@ body { padding-bottom: 32px; }
 }
 
 @media (max-width: 700px) {
-  .gpu-card { display: none; }
-  .gpu-mobile { display: block; }
-  .gpu-plate { padding-left: 0; }
 }
 
 @media (max-width: 800px) {
@@ -1325,3 +1223,87 @@ body { padding-bottom: 32px; }
   .carousel-arrow { width: 44px; height: 44px; }
   .slide-actions a, .slide-actions button { padding: 12px 0; }
 }
+
+/* Scroll build, circuit style: a trace routes around the part, then the part powers on (see useScrollBuild) */
+.build { opacity: 0; }
+
+.build.built {
+  animation: power-on 0.7s steps(1, end) both;
+  animation-delay: calc(0.55s + var(--build-i, 0) * 120ms);
+}
+
+@keyframes power-on {
+  0% { opacity: 0; }
+  15% { opacity: 0.9; }
+  30% { opacity: 0.15; }
+  45% { opacity: 1; }
+  60% { opacity: 0.4; }
+  75%, 100% { opacity: 1; }
+}
+
+.build-trace {
+  --trace: #3b9bff;
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  animation: trace-life 1.9s linear both;
+  animation-delay: calc(var(--build-i, 0) * 120ms);
+}
+
+.build-trace i { position: absolute; display: block; background: var(--trace); box-shadow: 0 0 6px 1px rgba(59, 155, 255, 0.8); }
+
+.bt-h { left: 0; right: 0; height: 1px; transform: scaleX(0); transform-origin: left; animation: trace-x 0.55s ease-out both; animation-delay: inherit; }
+.bt-top { top: 0; }
+.bt-bottom { bottom: 0; animation-delay: calc(var(--build-i, 0) * 120ms + 0.3s); }
+.bt-v { left: 0; top: 0; bottom: 0; width: 1px; transform: scaleY(0); transform-origin: top; animation: trace-y 0.5s ease-out both; animation-delay: calc(var(--build-i, 0) * 120ms + 0.1s); }
+
+.bt-pad { width: 7px; height: 7px; border-radius: 50%; background: #9fd8ff !important; opacity: 0; animation: pad-pop 0.4s ease-out both; }
+.bt-pad-a { left: -3px; top: -3px; animation-delay: calc(var(--build-i, 0) * 120ms); }
+.bt-pad-b { right: -3px; bottom: -3px; animation-delay: calc(var(--build-i, 0) * 120ms + 0.6s); }
+
+@keyframes trace-x { to { transform: scaleX(1); } }
+@keyframes trace-y { to { transform: scaleY(1); } }
+@keyframes pad-pop { 0% { opacity: 0; transform: scale(0.2); } 100% { opacity: 1; transform: none; } }
+@keyframes trace-life { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+
+/* System info (neofetch-style) */
+.sysinfo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 32px;
+  margin-top: 56px;
+  padding: 20px 24px;
+  border: 1px solid var(--line-strong);
+  font: 0.85rem/1.6 var(--mono);
+}
+.sysinfo-art { margin: 0; color: var(--blue); font: inherit; line-height: 1.15; }
+.sysinfo-rows { margin: 0; flex: 1; min-width: 240px; }
+.sysinfo-rows > div { display: flex; gap: 12px; }
+.sysinfo-rows dt { flex: none; width: 90px; color: var(--blue); }
+.sysinfo-rows dd { margin: 0; }
+.sysinfo-head dt { width: auto; font-weight: 700; }
+.sysinfo-head dd { color: var(--muted); }
+
+/* Block diagram in the diagnostic report */
+.block-diagram { display: block; width: 100%; height: auto; margin: 4px 0 8px; font-family: var(--mono); }
+.bd-node { fill: none; stroke: var(--line-strong); stroke-width: 1.2; }
+.bd-core { fill: none; stroke: var(--blue); stroke-width: 1.6; }
+.bd-wire { fill: none; stroke: var(--blue); stroke-width: 1.2; stroke-dasharray: 5 4; animation: bd-flow 1.2s linear infinite; }
+.bd-head { fill: var(--blue); }
+.bd-text { fill: var(--text); font-size: 11px; }
+.bd-title { fill: var(--blue); font-size: 13px; font-weight: 700; }
+.bd-label { fill: var(--muted); font-size: 9px; letter-spacing: 0.14em; }
+@keyframes bd-flow { to { stroke-dashoffset: -18; } }
+@media (prefers-reduced-motion: reduce) { .bd-wire { animation: none; } }
+
+/* Boot-log footer */
+.bootlog { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); font: 0.8rem/1.7 var(--mono); color: var(--muted); min-height: 8.5em; }
+.bootlog-line { opacity: 0; white-space: pre-wrap; }
+.bootlog-line.on { opacity: 1; }
+.bootlog-line .ok { color: #3fb950; }
+.bootlog-line.ready { color: var(--text); font-weight: 700; }
+.bootlog-cursor { animation: bootlog-blink 1s steps(1) infinite; }
+@keyframes bootlog-blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .bootlog-cursor { animation: none; } }
+

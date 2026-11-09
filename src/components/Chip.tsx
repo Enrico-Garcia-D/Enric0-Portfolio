@@ -64,7 +64,7 @@ function toTech(icon: ChipIcon): TechItem {
 const SIZE = 100
 
 /** A tool shown as an IC package; the name is read out on hover, focus, and by screen readers. */
-export default function Chip({ icon, look }: { icon: ChipIcon; look: ChipLook }) {
+export default function Chip({ icon, look, decorative = false }: { icon: ChipIcon; look: ChipLook; decorative?: boolean }) {
   const config: ChipConfig = {
     style: look.style,
     pinCount: look.pins,
@@ -79,7 +79,7 @@ export default function Chip({ icon, look }: { icon: ChipIcon; look: ChipLook })
 
   return (
     <li className="chip-item">
-      <span className="chip" tabIndex={0} role="img" aria-label={icon.label} data-label={icon.label}>
+      <span className="chip" tabIndex={decorative ? -1 : 0} role="img" aria-label={icon.label} data-label={icon.label}>
         <ChipRenderer tech={toTech(icon)} config={config} size={SIZE} />
       </span>
     </li>

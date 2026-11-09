@@ -1,4 +1,5 @@
 import type { Project } from '../data'
+import BlockDiagram from './BlockDiagram'
 import Modal from './Modal'
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
@@ -26,6 +27,9 @@ export default function ReportModal({ project, onClose }: { project: Project; on
 
         <p className="report-head">[ Hardware ]</p>
         <Row label="Uses">{project.hardware?.length ? project.hardware.join(', ') : 'No special hardware required'}</Row>
+
+        <p className="report-head">[ Block diagram ]</p>
+        <BlockDiagram project={project} />
 
         <p className="report-head">[ Links ]</p>
         <Row label="Source">

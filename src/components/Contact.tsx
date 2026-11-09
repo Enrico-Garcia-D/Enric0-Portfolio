@@ -1,5 +1,6 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { CONTACT_EMAIL, FORM_ENDPOINT, SOCIALS } from '../data'
+import { BOOT_LOG } from '../system'
 
 type Status = 'idle' | 'sending' | 'sent' | 'error'
 
@@ -8,6 +9,61 @@ const LABELS: Record<Status, string> = {
   sending: 'Sending...',
   sent: 'Message Sent',
   error: 'Error. Try again.',
+}
+
+/** Boot-log footer: prints line by line the first time it scrolls into view. */
+function BootLog() {
+  const ref = useRef<HTMLDivElement>(null)
+  const [shown, setShown] = useState(0)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+      setShown(BOOT_LOG.length)
+      return
+    }
+    let timer = 0
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return
+        io.disconnect()
+        timer = window.setInterval(() => {
+          setShown((n) => {
+            if (n + 1 >= BOOT_LOG.length) window.clearInterval(timer)
+            return n + 1
+          })
+        }, 320)
+      },
+      { threshold: 0.6 },
+    )
+    io.observe(el)
+    return () => {
+      io.disconnect()
+      window.clearInterval(timer)
+    }
+  }, [])
+
+  return (
+    <div className="bootlog" ref={ref} aria-label="Boot log">
+      {BOOT_LOG.map((l, i) => (
+        <div key={l} className={`bootlog-line${i < shown ? ' on' : ''}${l.startsWith('System') ? ' ready' : ''}`}>
+          {l.startsWith('[  OK  ]') ? (
+            <>
+              [ <span className="ok">OK</span> ]{l.slice(8)}
+            </>
+          ) : (
+            l
+          )}
+        </div>
+      ))}
+      {shown >= BOOT_LOG.length && (
+        <span className="bootlog-cursor" aria-hidden="true">
+          █
+        </span>
+      )}
+    </div>
+  )
 }
 
 export default function Contact() {
@@ -87,6 +143,7 @@ export default function Contact() {
           </div>
         </form>
       </div>
+      <BootLog />
     </footer>
   )
 }

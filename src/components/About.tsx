@@ -1,10 +1,7 @@
 import { PHOTO_URL, TOOLS } from '../data'
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import CircuitTraces from './CircuitTraces'
+import { useMemo } from 'react'
+import SystemInfo from './SystemInfo'
 import Chip, { CHIP_STYLES, FINISHES, PIN_COUNTS, type ChipLook } from './Chip'
-
-const CHIP_W = 100 // keep in step with SIZE in Chip.tsx
-const CHIP_GAP = 4
 
 const pick = <T,>(list: T[]) => list[Math.floor(Math.random() * list.length)]
 
@@ -25,73 +22,9 @@ function randomLooks(count: number): ChipLook[] {
 export default function About() {
   // New random assignment each visit; stable while the page stays open.
   const looks = useMemo(() => randomLooks(TOOLS.length), [])
-  const pins = useMemo(() => looks.map((l) => l.pins), [looks])
-  const boardRef = useRef<HTMLElement>(null)
-  const cpuRef = useRef<HTMLDivElement>(null)
-  const chipsRef = useRef<HTMLUListElement>(null)
-  const carouselRef = useRef<HTMLDivElement>(null)
-  const [edge, setEdge] = useState({ start: true, end: false })
-  const hovering = useRef(false)
-
-  const sync = useCallback(() => {
-    const el = chipsRef.current
-    if (!el) return
-    setEdge({ start: el.scrollLeft < 2, end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 2 })
-  }, [])
-
-  // One page is the visible width; the chips snap to the page start.
-  const page = useCallback((dir: 1 | -1 | 'first') => {
-    const el = chipsRef.current
-    if (!el) return
-    const left = dir === 'first' ? 0 : el.scrollLeft + dir * (el.clientWidth + 4)
-    el.scrollTo({ left, behavior: 'smooth' })
-  }, [])
-
-  // The row is as wide as a whole number of chips fits between the arrows, so no chip is ever cut off.
-  useLayoutEffect(() => {
-    const box = carouselRef.current
-    const el = chipsRef.current
-    const arrow = box?.querySelector('button')
-    if (!box || !el || !arrow) return
-    const fit = () => {
-      const avail = box.clientWidth - 2 * (arrow.offsetWidth + 8)
-      const n = Math.max(1, Math.floor((avail + CHIP_GAP) / (CHIP_W + CHIP_GAP)))
-      el.style.width = `${n * (CHIP_W + CHIP_GAP) - CHIP_GAP}px`
-      sync()
-    }
-    fit()
-    const ro = new ResizeObserver(fit)
-    ro.observe(box)
-    return () => ro.disconnect()
-  }, [sync])
-
-  useEffect(() => {
-    const el = chipsRef.current
-    if (!el) return
-    sync()
-    el.addEventListener('scroll', sync, { passive: true })
-    window.addEventListener('resize', sync)
-
-    // Auto-advance, looping back to the start; paused only while a mouse is over it (focus and touch never stall it).
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const timer = reduce
-      ? 0
-      : window.setInterval(() => {
-          if (hovering.current) return
-          if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 2) page('first')
-          else page(1)
-        }, 3500)
-
-    return () => {
-      el.removeEventListener('scroll', sync)
-      window.removeEventListener('resize', sync)
-      window.clearInterval(timer)
-    }
-  }, [sync, page])
 
   return (
-    <section id="about" className="section fade-in about-board" ref={boardRef}>
-      <CircuitTraces board={boardRef} cpu={cpuRef} chips={chipsRef} pins={pins} />
+    <section id="about" className="section fade-in about-board">
       <h2 className="section-title">About</h2>
       <div className="about-content-wrapper">
         <div>
@@ -119,40 +52,48 @@ export default function About() {
           </p>
         </div>
 
-        <div>
-          <div className="cpu-glow" ref={cpuRef}>
-            <div className="cpu">
-              <span className="cpu-pin1" aria-hidden="true" />
-              <div className="cpu-ihs">
-                <img className="about-photo" src={PHOTO_URL} alt="Portrait of Enrico Garcia" width={320} height={320} />
-              </div>
-            </div>
+        <div className="about-portrait">
+          <svg width="0" height="0" aria-hidden="true" focusable="false" style={{ position: 'absolute' }}>
+            <filter id="pencil-sketch" colorInterpolationFilters="sRGB">
+              <feColorMatrix type="saturate" values="0" result="gray" />
+              <feConvolveMatrix in="gray" order="3" kernelMatrix="-1 -1 -1 -1 8 -1 -1 -1 -1" preserveAlpha="true" result="edges" />
+              <feComponentTransfer in="edges" result="lines">
+                <feFuncR type="linear" slope="-3" intercept="1" />
+                <feFuncG type="linear" slope="-3" intercept="1" />
+                <feFuncB type="linear" slope="-3" intercept="1" />
+              </feComponentTransfer>
+              <feComponentTransfer in="gray" result="tone">
+                <feFuncR type="linear" slope="0.35" intercept="0.65" />
+                <feFuncG type="linear" slope="0.35" intercept="0.65" />
+                <feFuncB type="linear" slope="0.35" intercept="0.65" />
+              </feComponentTransfer>
+              <feBlend in="lines" in2="tone" mode="multiply" />
+            </filter>
+          </svg>
+          <div className="about-frame">
+            <img className="about-photo" src={PHOTO_URL} alt="Portrait of Enrico Garcia" />
           </div>
         </div>
       </div>
 
+      <SystemInfo />
+
       <div className="about-tools">
         <h3 className="skill-title">Tech &amp; Tools</h3>
-        <div
-          className="chip-carousel"
-          ref={carouselRef}
-          role="group"
-          aria-roledescription="carousel"
-          aria-label="Tech and tools"
-          onPointerEnter={(e) => (hovering.current = e.pointerType === 'mouse')}
-          onPointerLeave={() => (hovering.current = false)}
-        >
-          <button type="button" className="carousel-arrow chip-arrow" onClick={() => page(-1)} disabled={edge.start} aria-label="Previous tools">
-            &larr;
-          </button>
-          <ul className="chip-grid" ref={chipsRef}>
-            {TOOLS.map((t, i) => (
-              <Chip key={t.label} icon={t} look={looks[i]} />
-            ))}
-          </ul>
-          <button type="button" className="carousel-arrow chip-arrow" onClick={() => page(1)} disabled={edge.end} aria-label="Next tools">
-            &rarr;
-          </button>
+        <div className="chip-marquee" role="group" aria-label="Tech and tools">
+          <div className="chip-track">
+            <ul className="chip-grid">
+              {TOOLS.map((t, i) => (
+                <Chip key={t.label} icon={t} look={looks[i]} />
+              ))}
+            </ul>
+            {/* Duplicate set makes the loop seamless; hidden from assistive tech and the tab order */}
+            <ul className="chip-grid" aria-hidden="true">
+              {TOOLS.map((t, i) => (
+                <Chip key={t.label} icon={t} look={looks[i]} decorative />
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </section>

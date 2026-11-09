@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { LOG_ENTRIES, NAV_LINKS, PROJECTS, RESUME_URL, SKILLS_HARDWARE, SKILLS_SOFTWARE, SOCIALS } from '../data'
+import { BOOT_LOG, SYSTEM_INFO, uptime } from '../system'
 import type { Theme } from '../hooks/useTheme'
 
 interface Line {
@@ -29,6 +30,10 @@ const HELP = [
   '  troubleshooting <number>  read one case: symptom, diagnosis, fix',
   '  goto <section>    top, about, work, code, build, contact',
   '  contact           links and ways to reach me',
+  '  neofetch          spec sheet',
+  '  dmesg             boot log',
+  '  uptime · date     session info',
+  '  schematic <project>  block diagram of a project',
   '  resume            download my resume',
   '  theme <light|dark>',
   '  setup             open the BIOS setup',
@@ -98,6 +103,29 @@ export default function Terminal({ onClose, setTheme, onSetup, onBoot, onCrash, 
         goTo(id)
         onClose()
         return []
+      }
+      case 'neofetch':
+        return print(...SYSTEM_INFO.map(([k, v]) => `  ${k.padEnd(10)} ${v}`), `  ${'Uptime'.padEnd(10)} ${uptime()}`)
+      case 'dmesg':
+        return print(...BOOT_LOG)
+      case 'uptime':
+        return print(`up ${uptime()}`)
+      case 'date':
+        return print(new Date().toString())
+      case 'schematic': {
+        const p = arg ? PROJECTS.find((x) => x.title.toLowerCase().includes(arg.toLowerCase())) : undefined
+        if (!p) return err("usage: schematic <project>. Try 'projects'.")
+        const inputs = p.hardware?.length ? p.hardware : ['User input']
+        return print(
+          p.title,
+          ...inputs.map((h) => `  [ ${h} ]`),
+          '       |',
+          '       v',
+          `  [ ${p.title} :: ${p.platform} ]`,
+          '       |',
+          '       v',
+          '  [ Source repo ]  [ APK build ]',
+        )
       }
       case 'ls':
         return print(SECTION_IDS.map((s) => `${s}/`).join('  '))

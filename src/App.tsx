@@ -19,6 +19,7 @@ import { useActiveSection } from './hooks/useActiveSection'
 import { useHotkeys } from './hooks/useHotkeys'
 import { useKonami } from './hooks/useKonami'
 import { useRapid } from './hooks/useRapid'
+import { useScrollBuild } from './hooks/useScrollBuild'
 import { useTheme } from './hooks/useTheme'
 
 const NAV_IDS = NAV_LINKS.map((l) => l.id)
@@ -50,6 +51,7 @@ const goTo = (id: string) =>
 export default function App() {
   const { theme, setTheme, toggle } = useTheme()
   const active = useActiveSection(SECTION_IDS)
+  useScrollBuild()
   const [booting, setBooting] = useState(shouldBoot)
   const [bootIntro, setBootIntro] = useState(readIntroSetting)
   const [overlay, setOverlay] = useState<Overlay>(null)
