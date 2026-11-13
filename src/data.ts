@@ -48,7 +48,7 @@ export const NAV_LINKS = [
   { label: 'About', id: 'about' },
   { label: 'Work', id: 'work' },
   { label: 'Code', id: 'code' },
-  { label: 'Build', id: 'build' },
+  { label: 'Laptop', id: 'build' },
   { label: 'Contact', id: 'contact' },
 ]
 

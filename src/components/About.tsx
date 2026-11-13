@@ -1,6 +1,5 @@
 import { PHOTO_URL, TOOLS } from '../data'
 import { useMemo } from 'react'
-import SystemInfo from './SystemInfo'
 import Chip, { CHIP_STYLES, FINISHES, PIN_COUNTS, type ChipLook } from './Chip'
 
 const pick = <T,>(list: T[]) => list[Math.floor(Math.random() * list.length)]
@@ -75,8 +74,6 @@ export default function About() {
           </div>
         </div>
       </div>
-
-      <SystemInfo />
 
       <div className="about-tools">
         <h3 className="skill-title">Tech &amp; Tools</h3>

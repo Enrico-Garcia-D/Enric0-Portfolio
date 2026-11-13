@@ -893,6 +893,76 @@ body { padding-bottom: 32px; }
 /* Memtest */
 .memtest { margin: 0; font: inherit; white-space: pre-wrap; }
 
+/* Typing test */
+.typing { display: flex; flex-direction: column; gap: 12px; }
+.typing-stats { display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: 0.8rem; color: var(--muted); }
+.typing-stats b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.typing-text {
+  max-height: 7.2em;
+  overflow: hidden;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  font: 1rem/1.8 var(--mono);
+  color: var(--muted);
+  cursor: text;
+  word-break: break-word;
+}
+.tt-ch.ok { color: var(--text); }
+.tt-ch.bad { color: #dc2626; text-decoration: underline; }
+.tt-ch.caret { background: var(--text); color: var(--bg); }
+.typing-input {
+  padding: 8px 10px;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--text);
+  font: 0.9rem var(--mono);
+}
+.typing-input:focus-visible { outline: 1px solid var(--text); outline-offset: 2px; }
+.typing-hint { margin: 0; font-size: 0.75rem; color: var(--muted); }
+.typing-result p { margin: 0 0 8px; }
+.typing-result b { font-weight: 600; }
+
+/* Keyboard */
+.kb { display: flex; flex-direction: column; gap: 12px; }
+.kb-screen {
+  min-height: 2.6em;
+  padding: 8px 10px;
+  border: 1px solid var(--line-strong);
+  font: 0.9rem/1.5 var(--mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.kb-ph { color: var(--muted); }
+.kb-cursor { display: inline-block; width: 0.55em; height: 1.1em; margin-left: 1px; vertical-align: text-bottom; background: var(--text); animation: kb-blink 1s steps(1) infinite; }
+@keyframes kb-blink { 50% { opacity: 0; } }
+.kb-board { container-type: inline-size; padding: 6px; border: 1px solid var(--line); user-select: none; touch-action: none; }
+.kb-row { display: flex; }
+.kb-cell { padding: 2px; box-sizing: border-box; }
+.kb-key {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: clamp(26px, 8cqw, 44px);
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-bottom-width: 3px;
+  background: var(--bg);
+  color: var(--muted);
+  font: clamp(0.5rem, 2.2cqw, 0.75rem) var(--mono);
+  cursor: pointer;
+  transition: transform 60ms, background var(--transition), color var(--transition);
+}
+.kb-key.seen { color: var(--text); border-color: var(--text); }
+.kb-key.down { background: var(--text); color: var(--bg); border-bottom-width: 1px; transform: translateY(2px); }
+.kb-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--muted); }
+.kb-foot b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.kb-actions { display: flex; gap: 8px; }
+.kb-btn { padding: 4px 10px; border: 1px solid var(--line-strong); background: none; color: var(--text); font: 0.75rem var(--mono); cursor: pointer; }
+.kb-btn:hover { background: var(--text); color: var(--bg); }
+.kb-hint { margin: 0; font-size: 0.75rem; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .kb-cursor { animation: none; } .kb-key { transition: none; } }
+
 /* Terminal */
 .terminal {
   position: fixed;
@@ -1052,40 +1122,6 @@ body { padding-bottom: 32px; }
 .repo-desc { font-size: 0.85rem; color: var(--muted); }
 .repo-meta { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: auto; padding-top: 6px; font: 0.7rem var(--mono); color: var(--muted); }
 
-/* PC builder */
-.builder { display: grid; grid-template-columns: 1fr 1.2fr; gap: 32px; align-items: start; }
-
-.field { display: grid; gap: 6px; margin-bottom: 16px; }
-
-.field span {
-  font: 0.7rem var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.field select {
-  width: 100%;
-  padding: 10px 12px;
-  background: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--line-strong);
-  border-radius: 0;
-  font: 0.9rem var(--mono);
-}
-
-.field select:focus { outline: 1px solid var(--text); outline-offset: 2px; }
-
-.post-body { padding: 14px; font: 0.8rem/1.6 var(--mono); }
-.post-line { margin: 0 0 8px; }
-.post-tag { font-weight: 600; }
-.post-line.ok .post-tag { color: var(--blue); }
-.post-line.warn .post-tag { color: var(--warn); }
-.post-line.err .post-tag { color: var(--err); }
-.post-power { margin: 16px 0 0; color: var(--muted); overflow-x: auto; white-space: nowrap; }
-.post-verdict { margin: 12px 0 0; font-weight: 600; }
-.post-verdict.err { color: var(--err); }
-
 /* Fake blue screen (always blue, regardless of theme) */
 .bsod {
   position: fixed;
@@ -1145,7 +1181,6 @@ body { padding-bottom: 32px; }
   .slide { grid-template-columns: 1fr; }
   .slide-media { border-right: none; border-bottom: 1px solid var(--line); }
   .project-image { height: 320px; }
-  .builder { grid-template-columns: 1fr; gap: 24px; }
   .about-content-wrapper { grid-template-columns: 1fr; gap: 56px; }
   .section { padding: 72px 0; }
   .section-title { margin-bottom: 40px; }
@@ -1307,3 +1342,310 @@ body { padding-bottom: 32px; }
 @keyframes bootlog-blink { 50% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .bootlog-cursor { animation: none; } }
 
+
+/* =========================================
+   Laptop section: pinned stage; the pulled-back laptop is the interactive viewer
+   ========================================= */
+.laptop-section {
+  --bg: #0b0b0b;
+  --text: #ededed;
+  --muted: #8f8f8f;
+  --line: #242424;
+  --line-strong: #3d3d3d;
+  --blue: #60a5fa;
+  --accent: #ededed;
+  --accent-text: #0b0b0b;
+  position: relative;
+  height: 420vh;
+  color: var(--text);
+}
+.ls-stage { position: sticky; top: 0; height: calc(100vh - 32px); height: calc(100svh - 32px); overflow: hidden; background: #0b0b0b; }
+.ls-glow { position: absolute; inset: 0; opacity: 0; background: radial-gradient(ellipse at 50% 42%, #181d25 0%, #0b0b0b 72%); }
+.ls-canvas { position: absolute; inset: 0; }
+.ls-tip { position: absolute; display: none; z-index: 3; pointer-events: none; padding: 3px 8px; background: var(--bg); border: 1px solid var(--line-strong); font: 0.7rem var(--mono); white-space: nowrap; }
+
+/* Controls + panels fade in over the canvas once the laptop has arrived */
+.ls-ui { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; visibility: hidden; }
+.ls-ui > * { pointer-events: auto; }
+.ls-controls { position: absolute; left: 24px; bottom: 22px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.ls-controls .btn { margin-top: 0; padding: 10px 22px; }
+.ls-side { position: absolute; top: 28px; right: 24px; bottom: 22px; width: min(340px, 36vw); display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+.lv-info, .lv-list { background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px); }
+.lv-slider { display: flex; align-items: center; gap: 10px; font: 0.7rem var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.lv-slider input { width: 140px; accent-color: var(--blue); }
+
+@media (max-width: 900px) {
+  .ls-side { top: auto; left: 12px; right: 12px; bottom: 12px; width: auto; max-height: 44%; }
+  .lv-list { display: none; }
+  .lv-info { max-height: none; }
+  .ls-controls { top: 14px; left: 14px; bottom: auto; }
+  .lv-slider input { width: 100px; }
+}
+
+.lv-info { flex: 0 1 auto; max-height: 52%; display: flex; flex-direction: column; min-height: 0; }
+.lv-list { flex: 1 1 0; display: flex; flex-direction: column; min-height: 0; }
+.lv-info-body, .lv-list-body { overflow-y: auto; min-height: 0; }
+.lv-info-body { padding: 14px; font-size: 0.85rem; line-height: 1.55; }
+.lv-info-body p { margin: 0 0 10px; }
+.lv-name { margin: 0 0 2px; font-size: 1rem; font-weight: 600; line-height: 1.3; }
+.lv-pn { font: 0.72rem var(--mono); color: var(--blue); }
+.lv-sub { font-weight: 600; color: var(--blue); }
+.lv-svc { padding-top: 10px; border-top: 1px solid var(--line); color: var(--muted); }
+.lv-svc b { color: var(--text); font-weight: 600; }
+
+.lv-tag { display: inline-block; margin-left: 4px; padding: 0 6px; border-radius: 9px; font: 600 0.6rem var(--mono); letter-spacing: 0.08em; vertical-align: middle; }
+.lv-tag.CSR { background: rgba(63, 185, 80, 0.18); color: #2f9e44; }
+.lv-tag.ASP { background: rgba(240, 163, 90, 0.2); color: #c2680f; }
+:root[data-theme='dark'] .lv-tag.CSR { color: #56d364; }
+:root[data-theme='dark'] .lv-tag.ASP { color: #f0a35a; }
+
+.lv-list-body { padding: 4px 10px 10px; }
+.lv-group { margin: 12px 0 4px; font: 0.65rem var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.lv-row { display: flex; gap: 4px; margin: 2px 0; }
+.lv-part, .lv-eye { font: inherit; color: var(--text); background: transparent; border: 1px solid transparent; cursor: pointer; }
+.lv-part { flex: 1; min-width: 0; text-align: left; padding: 5px 8px; font-size: 0.8rem; line-height: 1.3; }
+.lv-part small { display: block; font: 0.65rem var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; }
+.lv-part:hover, .lv-eye:hover { border-color: var(--line-strong); }
+.lv-row.sel .lv-part { border-color: var(--blue); background: color-mix(in srgb, var(--blue) 12%, transparent); }
+.lv-eye { width: 30px; flex: none; color: var(--muted); }
+.lv-eye.off { opacity: 0.35; }
+.lv-fallback { color: var(--muted); font: 0.85rem var(--mono); }
+
+
+/* =========================================
+   Screen zone: Hero → Work live on the laptop display, framed by the lid bezel
+   ========================================= */
+.screen-zone {
+  --bg: #0b0b0b;
+  --text: #ededed;
+  --muted: #8f8f8f;
+  --line: #242424;
+  --line-strong: #3d3d3d;
+  --blue: #60a5fa;
+  --accent: #ededed;
+  --accent-text: #0b0b0b;
+  position: relative;
+  background: var(--bg);
+  color: var(--text);
+}
+.screen-zone .rotating-word, .screen-zone .c-key, .screen-zone .c-ok { color: #60a5fa; }
+.screen-zone .hero { min-height: calc(100svh - 32px); }
+.screen-zone .sysinfo { margin-top: 0; margin-bottom: 96px; }
+
+/* The track spans the zone; the frame sticks inside it, so it scrolls away when the display ends */
+.screen-track { position: absolute; inset: 0; pointer-events: none; }
+.screen-track { z-index: 50; }
+.screen-frame {
+  --bezel-top: clamp(20px, 3vw, 34px);
+  --bezel-side: clamp(10px, 1.5vw, 18px);
+  --bezel-bottom: clamp(14px, 2vw, 24px);
+  position: sticky;
+  top: 0;
+  height: calc(100svh - 32px);
+  overflow: hidden;
+}
+.screen-frame::before { /* the black bezel, with the display's rounded corners cut out of it */
+  content: '';
+  position: absolute;
+  inset: var(--bezel-top) var(--bezel-side) var(--bezel-bottom);
+  border-radius: 10px;
+  box-shadow: 0 0 0 100vmax #17191d, inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+.screen-frame::after { /* webcam */
+  content: '';
+  position: absolute;
+  top: calc(var(--bezel-top) / 2 - 3px);
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #2b3a52 0 35%, #14171c 70%);
+  box-shadow: 0 0 0 2px #17191d, 0 0 0 3px #26292f;
+}
+
+/* GitHub panels on the display: always the dark palette */
+.screen-zone .gh-panel {
+  --gh-0: #161b22; --gh-1: #0e4429; --gh-2: #006d32; --gh-3: #26a641; --gh-4: #39d353;
+  --gh-border: #30363d; --gh-fg: #e6edf3; --gh-muted: #8d96a0; --gh-bg: #0d1117;
+}
+
+.screen-frame { opacity: var(--frame-o, 1); }
+
+@media (max-width: 900px) {
+  .ls-side { top: auto; left: 12px; right: 12px; bottom: 12px; width: auto; max-height: 44%; }
+  .ls-side .lv-list { display: none; }
+  .ls-side .lv-info { max-height: none; }
+  .ls-controls { top: 14px; left: 14px; bottom: auto; }
+}
+
+/* Nav links land on the settled, interactive laptop rather than the start of the pull-back */
+.build-anchor { scroll-margin-top: -240vh; }
+
+/* When the model's own bezel has been rendered it replaces the CSS stand-in */
+.screen-zone.frame-3d .screen-frame { background: var(--frame-img) center / 100% 100% no-repeat; }
+.screen-zone.frame-3d .screen-frame::before,
+.screen-zone.frame-3d .screen-frame::after { display: none; }
+
+/* =========================================
+   HP BIOS (HP Computer Setup) look for everything on the laptop display
+   ========================================= */
+.screen-zone {
+  --bg: #04060c;
+  --text: #dfe4ee;
+  --muted: #8693aa;
+  --line: #16243b;
+  --line-strong: #2a4a78;
+  --blue: #3bb6f0;
+  --hp: #0096d6;
+  --win-x: 22px;
+  --win-b: 54px;
+  background: var(--bg);
+  font-family: Consolas, 'Lucida Console', 'SF Mono', ui-monospace, monospace;
+}
+.screen-zone .hero, .screen-zone .section { font-family: inherit; }
+.screen-zone .rotating-word, .screen-zone .c-key, .screen-zone .c-ok { color: var(--blue); }
+
+/* Chrome pinned inside the display window: title bar + tabs on top, key legend below */
+.bios-track { position: absolute; inset: 0; z-index: 40; pointer-events: none; }
+.bios-chrome {
+  position: sticky;
+  top: 0;
+  height: calc(100svh - 32px);
+  padding: 0 var(--win-x) var(--win-b);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  opacity: var(--frame-o, 1);
+  visibility: var(--frame-v, visible);
+  font: 0.78rem/1.3 Consolas, 'Lucida Console', ui-monospace, monospace;
+}
+.bios-head, .bios-foot { pointer-events: auto; background: #04060c; }
+.bios-bar { display: flex; justify-content: space-between; gap: 16px; padding: 7px 16px; background: var(--hp); color: #fff; letter-spacing: 0.06em; }
+.bios-brand { font-weight: 700; }
+.bios-model { opacity: 0.9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bios-tabs { display: flex; gap: 2px; padding: 0 12px; border-bottom: 1px solid var(--line-strong); }
+.bios-tab { padding: 6px 18px; color: var(--muted); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid transparent; border-bottom: 0; }
+.bios-tab:hover { color: #fff; }
+.bios-tab.on { color: #fff; background: var(--hp); }
+.bios-foot { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 28px; padding: 7px 16px; border-top: 1px solid var(--line-strong); color: var(--muted); }
+.bios-key kbd { font: inherit; color: #fff; background: var(--hp); padding: 0 6px; margin-right: 4px; }
+
+/* Page content sits between the pinned bars */
+.screen-zone .hero { padding-top: 120px; padding-bottom: 96px; scroll-margin-top: 0; }
+.screen-zone .section { border-top: 0; padding: 72px 0 80px; scroll-margin-top: 96px; }
+
+/* Section headings become BIOS group bars */
+.screen-zone .section-title {
+  display: block;
+  margin: 0 0 40px;
+  padding: 5px 14px;
+  background: var(--hp);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.screen-zone .section-title::before { content: '\25B6\00a0\00a0'; color: #fff; }
+.screen-zone .section-title::after { display: none; }
+.screen-zone .section-lead { color: var(--muted); }
+
+/* Hero as the Main page */
+.screen-zone .greeting { color: var(--blue); letter-spacing: 0.14em; }
+.screen-zone .greeting::before { content: '> '; }
+.screen-zone .name { font-weight: 400; letter-spacing: -0.02em; font-size: clamp(1.9rem, 4.8vw, 3.2rem); }
+.screen-zone .role { color: var(--muted); }
+
+/* Boxes: square, thin blue rules, blue title bars */
+.screen-zone .panel { border: 1px solid var(--line-strong); border-radius: 0; background: transparent; }
+.screen-zone .panel-head { background: var(--hp); color: #fff; letter-spacing: 0.12em; }
+.screen-zone .panel-body { color: var(--text); }
+
+/* Buttons are selection bars */
+.screen-zone .btn { border: 1px solid var(--hp); background: transparent; color: #fff; border-radius: 0; text-transform: uppercase; letter-spacing: 0.1em; font-family: inherit; font-size: 0.8rem; }
+.screen-zone .btn:hover:not(:disabled), .screen-zone .btn-solid { background: var(--hp); color: #fff; border-color: var(--hp); }
+.screen-zone .btn-solid:hover:not(:disabled) { background: #fff; color: #04060c; border-color: #fff; }
+
+/* CPU / system info as a field list with dotted leaders */
+.screen-zone .sysinfo { border: 1px solid var(--line-strong); padding: 18px 22px; font-size: 0.9rem; }
+.screen-zone .sysinfo-rows > div { border-bottom: 1px dotted var(--line-strong); padding: 1px 0; }
+.screen-zone .sysinfo-rows dt { color: var(--muted); }
+.screen-zone .sysinfo-rows dd { color: #fff; }
+.screen-zone .sysinfo-head dt { color: var(--blue); }
+.screen-zone .sysinfo-art { color: var(--blue); }
+
+/* About */
+.screen-zone .about-text { font-size: 0.92rem; color: var(--muted); }
+.screen-zone .about-text b, .screen-zone .highlight { color: #fff; font-weight: 400; }
+.screen-zone .highlight { background: color-mix(in srgb, var(--hp) 35%, transparent); padding: 0 4px; }
+.screen-zone .about-frame { border: 1px solid var(--line-strong); border-radius: 0; }
+.screen-zone .skill-title { color: var(--blue); letter-spacing: 0.14em; text-transform: uppercase; font-size: 0.8rem; }
+.screen-zone .skill-title::before { content: '[ '; }
+.screen-zone .skill-title::after { content: ' ]'; }
+.screen-zone .chip-marquee { border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong); }
+
+/* Work */
+.screen-zone .carousel-track { border: 1px solid var(--line-strong); }
+.screen-zone .slide-media { border-right: 1px solid var(--line-strong); background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 150, 214, 0.05) 3px 4px); }
+.screen-zone .project-image { border-radius: 2px; border-color: #0b1220; }
+.screen-zone .slide-index { color: var(--blue); }
+.screen-zone .slide-body h3 { font-weight: 400; letter-spacing: 0; text-transform: uppercase; font-size: clamp(1.2rem, 2.4vw, 1.6rem); }
+.screen-zone .slide-actions a, .screen-zone .slide-actions button { border-bottom: 1px solid var(--line-strong); }
+.screen-zone .carousel-arrow { border-radius: 0; border: 1px solid var(--hp); background: transparent; color: #fff; }
+.screen-zone .carousel-arrow:hover { background: var(--hp); }
+.screen-zone .carousel-count { color: var(--muted); }
+
+/* Code (GitHub) */
+.screen-zone .gh-panel { border-radius: 0; border: 1px solid var(--line-strong); }
+.screen-zone .repo { border-radius: 0; border: 1px solid var(--line-strong); background: transparent; }
+.screen-zone .repo:hover { border-color: var(--hp); background: color-mix(in srgb, var(--hp) 12%, transparent); }
+.screen-zone .repo-name { color: var(--blue); }
+.screen-zone .link-btn { color: var(--blue); }
+
+@media (max-width: 700px) {
+  .bios-model { display: none; }
+  .bios-foot .bios-key:nth-child(n + 4) { display: none; }
+  .bios-tab { padding: 6px 10px; }
+}
+
+/* =========================================
+   Scrollbars: slim, theme-aware, blend with the page
+   ========================================= */
+:root { --sb-thumb: color-mix(in srgb, var(--text) 22%, transparent); --sb-thumb-hover: color-mix(in srgb, var(--text) 42%, transparent); }
+* { scrollbar-width: thin; scrollbar-color: var(--sb-thumb) transparent; }
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-track, *::-webkit-scrollbar-corner { background: transparent; }
+*::-webkit-scrollbar-thumb { background: var(--sb-thumb); border-radius: 8px; border: 2px solid transparent; background-clip: content-box; }
+*::-webkit-scrollbar-thumb:hover { background: var(--sb-thumb-hover); background-clip: content-box; }
+/* page scrollbar on the display: BIOS blue */
+.screen-zone, .laptop-section { --sb-thumb: rgba(0, 150, 214, 0.55); --sb-thumb-hover: rgba(59, 182, 240, 0.85); }
+html { scrollbar-color: rgba(0, 150, 214, 0.5) #04060c; }
+html::-webkit-scrollbar { width: 10px; }
+html::-webkit-scrollbar-track { background: #04060c; }
+html::-webkit-scrollbar-thumb { background: rgba(0, 150, 214, 0.5); border-radius: 0; border: 0; background-clip: border-box; }
+html::-webkit-scrollbar-thumb:hover { background: rgba(59, 182, 240, 0.85); }
+.carousel-track, .chip-marquee { scrollbar-width: none; }
+
+/* Laptop section title */
+.ls-title { position: absolute; top: 28px; left: 24px; margin: 0; padding: 5px 16px; background: var(--hp, #0096d6); color: #fff; font: 700 0.85rem Consolas, 'Lucida Console', ui-monospace, monospace; letter-spacing: 0.16em; text-transform: uppercase; pointer-events: none; }
+.ls-title::before { content: '▶  '; white-space: pre; }
+@media (max-width: 900px) { .ls-title { top: 14px; left: 14px; } .ls-controls { top: 56px; } }
+
+/* Hero now sits on the normal page, above the laptop */
+.hero-block .sysinfo { margin-top: 0; margin-bottom: 72px; }
+.lid-open { position: relative; height: 320vh; background: #04060c; }
+.lid-open-stage { position: sticky; top: 0; height: calc(100vh - 32px); height: calc(100svh - 32px); overflow: hidden; background: radial-gradient(ellipse at 50% 45%, #10151d 0%, #04060c 72%); }
+.lid-open-canvas { position: absolute; inset: 0; }
+
+/* The screen zone overlaps the pinned lid; it only becomes opaque (and shows its bezel) once it reaches the top */
+.lid-open { height: 300vh; }
+.lid-open + .screen-zone { margin-top: calc(32px - 100svh); z-index: 2; }
+.lid-open + .screen-zone:not(.zone-live) { background: transparent; }
+.lid-open + .screen-zone:not(.zone-live) .screen-track,
+.lid-open + .screen-zone:not(.zone-live) .bios-track { visibility: hidden; }
+.lid-open + .screen-zone:not(.zone-live) .bios-chrome { visibility: hidden !important; }
+/* About fades in by itself once the lid is fully open, instead of scrolling up with the page */
+.lid-open + .screen-zone > .container, .lid-open + .screen-zone .bios-chrome { transition: opacity 0.9s ease 0.15s; }
+.lid-open + .screen-zone:not(.zone-live) > .container { opacity: 0; pointer-events: none; }
+.lid-open + .screen-zone:not(.zone-live) .bios-chrome { opacity: 0 !important; }

@@ -13,6 +13,8 @@ interface Props {
   setTheme: (t: Theme) => void
   onSetup: () => void
   onBoot: () => void
+  onTyping: () => void
+  onKeyboard: () => void
   onCrash: () => void
   onProject: (query: string) => boolean
   goTo: (id: string) => void
@@ -38,10 +40,12 @@ const HELP = [
   '  theme <light|dark>',
   '  setup             open the BIOS setup',
   '  boot              replay the boot sequence',
+  '  typing            30-second typing test',
+  '  keyboard          interactive 68-key keyboard',
   '  clear · exit',
 ]
 
-export default function Terminal({ onClose, setTheme, onSetup, onBoot, onCrash, onProject, goTo }: Props) {
+export default function Terminal({ onClose, setTheme, onSetup, onBoot, onTyping, onKeyboard, onCrash, onProject, goTo }: Props) {
   const [lines, setLines] = useState<Line[]>([
     { text: "Enrico Garcia terminal. Type 'help' to list commands." },
     { text: "Type 'troubleshooting' to read my troubleshooting log." },
@@ -149,6 +153,13 @@ export default function Terminal({ onClose, setTheme, onSetup, onBoot, onCrash, 
         return []
       case 'boot':
         onBoot()
+        return []
+      case 'typing':
+        onTyping()
+        return []
+      case 'keyboard':
+      case 'kb':
+        onKeyboard()
         return []
       case 'clear':
         setLines([])

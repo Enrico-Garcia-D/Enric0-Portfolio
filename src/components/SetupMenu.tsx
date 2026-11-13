@@ -17,9 +17,11 @@ interface Props {
   onToggleIntro: () => void
   onBoot: () => void
   onTerminal: () => void
+  onTyping: () => void
+  onKeyboard: () => void
 }
 
-export default function SetupMenu({ theme, bootIntro, onClose, onToggleTheme, onToggleIntro, onBoot, onTerminal }: Props) {
+export default function SetupMenu({ theme, bootIntro, onClose, onToggleTheme, onToggleIntro, onBoot, onTerminal, onTyping, onKeyboard }: Props) {
   const [tab, setTab] = useState(0)
   const [row, setRow] = useState(0)
 
@@ -54,6 +56,8 @@ export default function SetupMenu({ theme, bootIntro, onClose, onToggleTheme, on
       rows: [
         { label: 'Save & Exit', value: '[Esc]', action: onClose },
         { label: 'Open terminal', value: '[`]', action: onTerminal },
+        { label: 'Typing test', value: '[Run]', action: onTyping },
+        { label: 'Keyboard (68 keys)', value: '[Run]', action: onKeyboard },
         {
           label: 'Download resume',
           value: '[PDF]',

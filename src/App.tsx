@@ -1,18 +1,21 @@
-import { useCallback, useState } from 'react'
+import { Suspense, lazy, useCallback, useState } from 'react'
 import About from './components/About'
 import BackToTop from './components/BackToTop'
 import BootScreen from './components/BootScreen'
+import BiosChrome from './components/BiosChrome'
 import Bsod from './components/Bsod'
 import Contact from './components/Contact'
 import GithubActivity from './components/GithubActivity'
 import Hero from './components/Hero'
+import Keyboard from './components/Keyboard'
 import Memtest from './components/Memtest'
-import PcBuilder from './components/PcBuilder'
 import ReportModal from './components/ReportModal'
 import SetupMenu from './components/SetupMenu'
 import Sidebar from './components/Sidebar'
 import StatusBar from './components/StatusBar'
+import SystemInfo from './components/SystemInfo'
 import Terminal from './components/Terminal'
+import TypingTest from './components/TypingTest'
 import Work from './components/Work'
 import { NAV_LINKS, PROJECTS, type Project } from './data'
 import { useActiveSection } from './hooks/useActiveSection'
@@ -22,10 +25,14 @@ import { useRapid } from './hooks/useRapid'
 import { useScrollBuild } from './hooks/useScrollBuild'
 import { useTheme } from './hooks/useTheme'
 
+// three.js is only needed for the laptop scenes, so it loads as its own chunk.
+const LaptopOpen = lazy(() => import('./components/LaptopOpen'))
+const LaptopViewer = lazy(() => import('./components/LaptopViewer'))
+
 const NAV_IDS = NAV_LINKS.map((l) => l.id)
 const SECTION_IDS = ['top', ...NAV_IDS]
 
-type Overlay = 'setup' | 'terminal' | 'memtest' | 'bsod' | null
+type Overlay = 'setup' | 'terminal' | 'memtest' | 'typing' | 'keyboard' | 'bsod' | null
 
 const readIntroSetting = () => {
   try {
@@ -81,6 +88,8 @@ export default function App() {
   const closeOverlay = useCallback(() => setOverlay(null), [])
   const openSetup = useCallback(() => setOverlay('setup'), [])
   const openTerminal = useCallback(() => setOverlay('terminal'), [])
+  const openTyping = useCallback(() => setOverlay('typing'), [])
+  const openKeyboard = useCallback(() => setOverlay('keyboard'), [])
   const replayBoot = useCallback(() => {
     setOverlay(null)
     setBooting(true)
@@ -122,13 +131,36 @@ export default function App() {
         onSetup={openSetup}
         onTerminal={openTerminal}
       />
-      <main className="container">
-        <Hero />
-        <About />
-        <Work onReport={setReport} />
-        <GithubActivity />
-        <PcBuilder />
-        <Contact />
+      <main>
+        <div className="container hero-block">
+          <Hero />
+          <SystemInfo />
+        </div>
+        {/* Scrolling on: a closed laptop opens its lid until the screen fills the page. */}
+        <Suspense fallback={null}>
+          <LaptopOpen />
+        </Suspense>
+        {/* About onward live on the laptop display; the frame is the lid bezel. */}
+        <div className="screen-zone">
+          <div className="screen-track" aria-hidden="true">
+            <div className="screen-frame" />
+          </div>
+          <BiosChrome active={active} />
+          <div className="container">
+            <About />
+            <Work onReport={setReport} />
+            <GithubActivity />
+          </div>
+          {/* The display ends: its bezel becomes the lid, the camera pulls back, and the whole laptop is the Laptop section. */}
+          <div id="build" className="build-anchor">
+            <Suspense fallback={<div className="laptop-section" />}>
+              <LaptopViewer />
+            </Suspense>
+          </div>
+        </div>
+        <div className="container">
+          <Contact />
+        </div>
       </main>
       <StatusBar active={active} />
       <BackToTop />
@@ -142,6 +174,8 @@ export default function App() {
           onToggleIntro={toggleIntro}
           onBoot={replayBoot}
           onTerminal={openTerminal}
+          onTyping={openTyping}
+          onKeyboard={openKeyboard}
         />
       )}
       {overlay === 'terminal' && (
@@ -150,12 +184,16 @@ export default function App() {
           setTheme={setTheme}
           onSetup={openSetup}
           onBoot={replayBoot}
+          onTyping={openTyping}
+          onKeyboard={openKeyboard}
           onCrash={() => crash('MANUAL_CRASH_REQUESTED')}
           onProject={openProjectByName}
           goTo={goTo}
         />
       )}
       {overlay === 'memtest' && <Memtest onClose={closeOverlay} />}
+      {overlay === 'typing' && <TypingTest onClose={closeOverlay} />}
+      {overlay === 'keyboard' && <Keyboard onClose={closeOverlay} />}
       {overlay === 'bsod' && <Bsod stopCode={stopCode} onRestart={replayBoot} />}
       {report && <ReportModal project={report} onClose={() => setReport(null)} />}
     </>
