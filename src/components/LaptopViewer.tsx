@@ -31,8 +31,11 @@ interface Api {
 
 const CATS = ['Display assembly', 'Top cover & input', 'Main board & cooling', 'Memory & storage', 'Wireless', 'Power', 'I/O & audio', 'Base']
 const EXPLODE_DEFAULT = 0.85
-const ZOOM_MIN = 0.6 // 1 = the framing the laptop arrives in
-const ZOOM_MAX = 2.4
+const ZOOM_MIN = 0.5 // slider is logarithmic: 0.5x .. 2x, so its middle (50%) is 1 = the framing the laptop arrives in
+const ZOOM_MAX = 2
+const ZOOM_DEFAULT = 1
+const zoomToPos = (z: number) => Math.log(z / ZOOM_MIN) / Math.log(ZOOM_MAX / ZOOM_MIN)
+const posToZoom = (p: number) => ZOOM_MIN * Math.pow(ZOOM_MAX / ZOOM_MIN, p)
 
 const FOV = 32
 const SCREEN_W = 6.2
@@ -72,7 +75,7 @@ export default function LaptopViewer() {
   const [sub, setSub] = useState<string | null>(null)
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set())
   const [amount, setAmount] = useState(0)
-  const [zoom, setZoom] = useState(1)
+  const [zoom, setZoom] = useState(ZOOM_DEFAULT)
   const [lidAngle, setLidAngle] = useState(LID_DEG)
 
   useEffect(() => {
@@ -216,8 +219,8 @@ export default function LaptopViewer() {
 
     let ex = 0
     let exTarget = 0
-    let zoom = 1
-    let zoomTarget = 1
+    let zoom = ZOOM_DEFAULT
+    let zoomTarget = ZOOM_DEFAULT
     let lidDeg = LID_DEG
     let lidTarget = LID_DEG
     let baseDist = 1
@@ -342,10 +345,10 @@ export default function LaptopViewer() {
         lidTarget = LID_DEG
         setLidAngle(LID_DEG)
       }
-      if (zoomTarget !== 1 || zoom !== 1) {
-        zoomTarget = 1
-        zoom = 1
-        setZoom(1)
+      if (zoomTarget !== ZOOM_DEFAULT || zoom !== ZOOM_DEFAULT) {
+        zoomTarget = ZOOM_DEFAULT
+        zoom = ZOOM_DEFAULT
+        setZoom(ZOOM_DEFAULT)
       }
       fromPos.copy(camera.position)
       fromTgt.copy(controls.target)
@@ -548,7 +551,7 @@ export default function LaptopViewer() {
                 type="range"
                 min={0}
                 max={1}
-                step={0.01}
+                step={0.005}
                 value={amount}
                 onChange={(e) => setAmount(Number(e.target.value))}
                 aria-label="Explode amount"
@@ -570,11 +573,11 @@ export default function LaptopViewer() {
               <span>Zoom</span>
               <input
                 type="range"
-                min={ZOOM_MIN}
-                max={ZOOM_MAX}
-                step={0.01}
-                value={zoom}
-                onChange={(e) => setZoom(Number(e.target.value))}
+                min={0}
+                max={1}
+                step={0.005}
+                value={zoomToPos(zoom)}
+                onChange={(e) => setZoom(posToZoom(Number(e.target.value)))}
                 aria-label="Zoom"
               />
             </label>

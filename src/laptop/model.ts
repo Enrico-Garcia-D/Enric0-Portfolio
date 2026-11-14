@@ -35,10 +35,10 @@ const pending = [] // image loads the textures wait on
 /* ------------------------------------------------------------------ helpers */
 const V = (x,y,z)=>new THREE.Vector3(x,y,z);
 const std = (c,m=.5,r=.5,o={})=>new THREE.MeshStandardMaterial({color:c,metalness:m,roughness:r,...o});
-const MT = {bezel:std(0x030304,0,.92), silver:std(0xc3c7cb,.55,.42), silver2:std(0xc9cdd1,.3,.5), steel:std(0xc6cbd0,.8,.3), black:std(0x15181c,.1,.65), key:std(0x040405,0,.5,{envMapIntensity:.25}), keyTop:std(0x181c20,.02,.72),
+const MT = {bezel:std(0x030304,0,.92), silver:std(0xbcc1c6,.68,.46), silver2:std(0xc2c7cc,.6,.52), steel:std(0xc6cbd0,.8,.3), black:std(0x15181c,.1,.65), key:std(0x0b0b0c,0,.6,{envMapIntensity:.25}), keyTop:std(0x181c20,.02,.72),
   pcb:std(0x1d5c47,.25,.5), pcb2:std(0x12302a,.25,.55), gold:std(0xd6a93c,1,.28), chip:std(0x0b0d10,.4,.35), cu:std(0xb87333,.9,.28), ssd:std(0x1a2947,.3,.5), rub:std(0x08090a,0,.95),
   glass:std(0x0a0d11,0,.12), batt:std(0x1f252c,.35,.5), white:std(0xe9edf0,0,.6), zif:std(0x2a2d31,.3,.5), flap:std(0xcfc9b8,0,.7), ram:std(0x1b5a3a,.25,.5), imp:std(0x2a2e33,.3,.5), led:std(0xffffff,0,.4,{emissive:0xffffff,emissiveIntensity:1.2})};
-const keycap = (w,d,x,z)=>{const g=new THREE.BoxGeometry(w,.05,d,5,1,5),P=g.attributes.position;for(let i=0;i<P.count;i++)if(P.getY(i)>0){const u=P.getX(i)/(w/2),v=P.getZ(i)/(d/2);P.setX(i,P.getX(i)*.9);P.setZ(i,P.getZ(i)*.9);P.setY(i,P.getY(i)-.007*(1-Math.min(1,(u*u+v*v)/2)))}g.computeVertexNormals();return g.translate(x,.395,z)};
+const keycap = (w,d,x,z)=>{const hx=w*.49,hz=d*.49,r=Math.min(.012,hx*.5,hz*.5),s=new THREE.Shape();  s.moveTo(-hx+r,-hz);s.lineTo(hx-r,-hz);s.absarc(hx-r,-hz+r,r,-Math.PI/2,0,false);s.lineTo(hx,hz-r);s.absarc(hx-r,hz-r,r,0,Math.PI/2,false);s.lineTo(-hx+r,hz);s.absarc(-hx+r,hz-r,r,Math.PI/2,Math.PI,false);s.lineTo(-hx,-hz+r);s.absarc(-hx+r,-hz+r,r,Math.PI,Math.PI*1.5,false);  const g=new THREE.ExtrudeGeometry(s,{depth:.034,bevelEnabled:true,bevelThickness:.005,bevelSize:.004,bevelOffset:-.004,bevelSegments:2,curveSegments:4});g.rotateX(-Math.PI/2);return g.translate(x,.372,z)};
 const bx = (w,h,d,x,y,z)=>new THREE.BoxGeometry(w,h,d).translate(x,y,z);
 const box = (w,h,d,x,y,z,m)=>new THREE.Mesh(bx(w,h,d,x,y,z),m);
 const merge = (a,m)=>new THREE.Mesh(mergeGeometries(a),m);
@@ -82,8 +82,9 @@ function grp(...c){const g=new THREE.Group();c.forEach(x=>g.add(x));return g}
 function chipsOn(zones,avoid,y,n,seed,top){const a=[];let s=seed;const rnd=()=>(s=(s*16807)%2147483647)/2147483647;
   for(let i=0;i<n*6&&a.length<n;i++){const x=-2.7+rnd()*5.4,z=-1.85+rnd()*2.35,w=.07+rnd()*.16,d=.07+rnd()*.14;
     if(!top&&avoid.some(r=>x+w/2>r[0]&&x-w/2<r[1]&&z+d/2>r[2]&&z-d/2<r[3]))continue;a.push(bx(w,.012,d,x,y,z))}return a}
-const tex = c=>{const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=16;return t};
+const tex = c=>{const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t};
 const canvas = (w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c};
+// bead-blasted anodised aluminium: a fine, even sand grain (bump only, so it catches the light without changing the colour){const c=canvas(256,256),x=c.getContext('2d'),d=x.createImageData(256,256);let s=11;  for(let i=0;i<256*256;i++){s=(s*1664525+1013904223)>>>0;const v=128+((s>>>24)-128)*.55;d.data[i*4]=d.data[i*4+1]=d.data[i*4+2]=v;d.data[i*4+3]=255}  x.putImageData(d,0,0);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(5,5);t.anisotropy=8;  for(const m of[MT.silver,MT.silver2]){m.bumpMap=t;m.bumpScale=.5;m.needsUpdate=true}}
 
 /* ------------------------------------------------------------------ realism helpers: printed labels, PCB artwork, SMD detail */
 const rndFrom=s=>()=>(s=(s*16807)%2147483647)/2147483647;
@@ -149,7 +150,7 @@ function logoOfficial(){const cv=canvas(512,512),x=cv.getContext('2d');const T=t
 function logoMirror(){const cv=canvas(512,512),x=cv.getContext('2d');const T=tex(cv);
   const im=new Image();im.onload=()=>{const t=document.createElement('canvas');t.width=t.height=512;const c=t.getContext('2d');c.drawImage(im,0,0,512,512);
     const d=c.getImageData(0,0,512,512),p=d.data;
-    for(let i=0;i<p.length;i+=4){const q=Math.max(0,Math.min(1,((p[i+2]-p[i])/170-.2)/.5)),a=q*q*(3-2*q);p[i]=p[i+1]=p[i+2]=255;p[i+3]=Math.round(a*255)}
+    for(let i=0;i<p.length;i+=4){const q=Math.max(0,Math.min(1,((p[i+2]-p[i])/170-.2)/.5)),a=q*q*(3-2*q);const n=i>>2,u=((n%512)+((n/512)|0))/1024,b=62+150*Math.exp(-(((u-.55)/.11)**2))+25*(1-u);p[i]=Math.min(255,b*(1-.14*(1-u)));p[i+1]=Math.min(255,b*(1-.06*(1-u)));p[i+2]=Math.min(255,b);p[i+3]=Math.round(a*255)}
     x.clearRect(0,0,512,512);x.putImageData(d,0,0);T.needsUpdate=true};im.src=ASSET+'hp-logo.png';pending.push(new Promise(r=>{im.addEventListener('load',r);im.addEventListener('error',r)}));return T}
 
 function logoTexture(){const cv=canvas(256,256),x=cv.getContext('2d');x.strokeStyle='rgba(235,240,245,.9)';x.lineWidth=10;x.beginPath();x.arc(128,128,100,0,Math.PI*2);x.stroke();
@@ -159,24 +160,24 @@ function logoTexture(){const cv=canvas(256,256),x=cv.getContext('2d');x.strokeSt
 const KW=5.71,KD=2.0,KZC=-.4475,KU=.347;
 /* 14" HP keyboard, measured from the reference photo: a 14.8u main block + 0.1u gap + 1u right-hand column (delete/home/pg up/pg dn/end/right-arrow) */
 function keyLayout(lay){
-  const u=KU,gap=.04,keys=[],x0=-7.95*u,de=lay==='de';
+  const u=KU,gap=.018,keys=[],x0=-7.95*u,de=lay==='de';
   const L=t=>t.split('').map(c=>[c,1]);
   const F=['esc','f1','f2','f3','f4','f5','f6','f7','f8','f9',de?'einfg':'insert','f11','f12',de?'druck':'prt scr','pwr'].map(l=>[l,14.8/15]);
   const rows=[
-    {z:-1.3287,h:.19,k:[...F,['skip',.1],[de?'entf':'delete',1]]},
-    {z:-1.0547,h:.29,k:[...L(de?'^1234567890ß´':'`1234567890-='),['backspace',1.8],['skip',.1],[de?'pos1':'home',1]]},
-    {z:-.7097,h:.29,k:de?[['tab',1.45],...L('qwertzuiopü+'),['skip',1.35],['skip',.1],['bild ↑',1]]:[['tab',1.45],...L('qwertyuiop[]'),['\\',1.35],['skip',.1],['pg up',1]]},
-    {z:-.3695,h:.29,k:de?[['caps lock',1.7],...L('asdfghjklöä#'),['skip',1.1],['skip',.1],['bild ↓',1]]:[['caps lock',1.7],...L("asdfghjkl;'"),['enter',2.1],['skip',.1],['pg dn',1]]},
-    {z:-.0199,h:.29,k:de?[['shift',1.2],...L('<yxcvbnm,.-'),['shift',2.6],['skip',.1],['ende',1]]:[['shift',2.15],...L('zxcvbnm,./'),['shift',2.65],['skip',.1],['end',1]]},
-    {z:.3298,h:.29,k:[['ctrl',1.15],['fn',1.1],['win',1.05],['alt',1],['',5],['alt gr',1.05],['menu',.95],['ctrl',1],['left',1.05],['updown',1.45],['skip',.1],['right',1]]}];
+    {z:-1.3287,h:.205,k:[...F,['skip',.1],[de?'entf':'delete',1]]},
+    {z:-1.0547,h:.315,k:[...L(de?'^1234567890ß´':'`1234567890-='),['backspace',1.8],['skip',.1],[de?'pos1':'home',1]]},
+    {z:-.7097,h:.315,k:de?[['tab',1.45],...L('qwertzuiopü+'),['skip',1.35],['skip',.1],['bild ↑',1]]:[['tab',1.45],...L('qwertyuiop[]'),['\\',1.35],['skip',.1],['pg up',1]]},
+    {z:-.3695,h:.315,k:de?[['caps lock',1.7],...L('asdfghjklöä#'),['skip',1.1],['skip',.1],['bild ↓',1]]:[['caps lock',1.7],...L("asdfghjkl;'"),['enter',2.1],['skip',.1],['pg dn',1]]},
+    {z:-.0199,h:.315,k:de?[['shift',1.2],...L('<yxcvbnm,.-'),['shift',2.6],['skip',.1],['ende',1]]:[['shift',2.15],...L('zxcvbnm,./'),['shift',2.65],['skip',.1],['end',1]]},
+    {z:.3298,h:.315,k:[['ctrl',1.15],['fn',1.1],['win',1.05],['alt',1],['',5],['alt gr',1.05],['menu',.95],['ctrl',1],['left',1.05],['updown',1.45],['skip',.1],['right',1]]}];
   for(const r of rows){let x=x0;for(const [l,w] of r.k){const cx=x+w*u/2,kw=w*u-gap;if(l==='skip'){x+=w*u;continue}
-    if(l==='updown'){keys.push({x:cx,z:r.z-.077,w:kw,h:.138,l:'up'},{x:cx,z:r.z+.077,w:kw,h:.138,l:'down'})}
+    if(l==='updown'){keys.push({x:cx,z:r.z-.077,w:kw,h:.152,l:'up'},{x:cx,z:r.z+.077,w:kw,h:.152,l:'down'})}
     else keys.push({x:cx,z:r.z,w:kw,h:r.h,l});x+=w*u}}
-  if(de)keys.push({x:x0+(13.7+.55)*u,z:-.5397,w:1.1*u-gap,h:.63,l:'enter'});
+  if(de)keys.push({x:x0+(13.7+.55)*u,z:-.5397,w:1.1*u-gap,h:.66,l:'enter'});
   return keys}
 function keyboardTexture(keys,lit){
   const S0=400,S=480,cv=canvas(KW*S,KD*S),x=cv.getContext('2d'),FONT='system-ui,"Segoe UI Symbol","Segoe UI",sans-serif';
-  const de=keys.some(k=>k.l==='ß'),col=lit?'#cfe8ff':'#f3f6f8';
+  const de=keys.some(k=>k.l==='ß'),col=lit?'#7fc6ff':'#e3e6e9';
   x.scale(S/S0,S/S0);x.textBaseline='middle';x.fillStyle=x.strokeStyle=col;x.lineWidth=5;x.lineCap='round';x.lineJoin='round';
   const SH=de?{'^':'°','1':'!','2':'"','3':'§','4':'$','5':'%','6':'&','7':'/','8':'(','9':')','0':'=','ß':'?','´':'`','+':'*','#':"'",',':';','.':':','-':'_','<':'>'}
     :{'`':'~','1':'!','2':'@','3':'#','4':'$','5':'%','6':'^','7':'&','8':'*','9':'(','0':')','-':'_','=':'+',';':':',"'":'"',',':'<','.':'>','/':'?','[':'{',']':'}','\\':'|'};
@@ -194,7 +195,7 @@ function keyboardTexture(keys,lit){
     else if(id==='f7'){spk();arc(8);arc(15)}
     else if(id==='f8')mic(0);
     else if(id==='f9'){x.strokeRect(cx-17,cy-3,34,16);for(let i=-1;i<=1;i++){x.beginPath();x.moveTo(cx+i*10,cy-12);x.lineTo(cx+i*10,cy-7);x.stroke()}}
-    else if(id==='f11'){x.font='600 34px '+FONT;x.textAlign='center';x.fillText('✈',cx,cy+1)}
+    else if(id==='f11'){x.font='500 34px '+FONT;x.textAlign='center';x.fillText('✈',cx,cy+1)}
     else if(id==='f12'){x.beginPath();x.arc(cx,cy,5,0,7);x.stroke();for(const r of[11,17]){x.beginPath();x.arc(cx,cy,r,-.9,.9);x.stroke();x.beginPath();x.arc(cx,cy,r,Math.PI-.9,Math.PI+.9);x.stroke()}}
     x.restore()};
   for(const k of keys){const px=(k.x+KW/2)*S0,py=(k.z-(KZC-KD/2))*S0,l=k.l,hw=k.w*S0/2,hh=k.h*S0/2,tl=px-hw+14,tt=py-hh+22;if(!l)continue;
@@ -208,17 +209,17 @@ function keyboardTexture(keys,lit){
       x.stroke();continue}
     if(l==='win'){for(const[a,b]of[[-1,-1],[1,-1],[-1,1],[1,1]])x.fillRect(px+(a>0?2:-14),py+(b>0?2:-14),12,12);continue}
     if(l==='menu'){x.strokeRect(px-14,py-14,28,28);for(const o of[-6,0,6]){x.beginPath();x.moveTo(px-8,py+o);x.lineTo(px+8,py+o);x.stroke()}continue}
-    if(/^f\d+$/.test(l)){x.font='600 18px '+FONT;x.fillText(l,tl,tt-2);icon(l,px,py+4);continue}
-    if(l==='insert'||l==='einfg'){x.font='600 18px '+FONT;x.fillText('f10',tl,tt-2);x.font='600 20px '+FONT;x.textAlign='center';x.fillText(l,px,py+4);continue}
-    if(l==='shift'){x.font='600 22px '+FONT;x.fillText(k.x<0?'shift ⇧':'⇧ shift',tl,tt);continue}
-    if(l==='enter'){x.font='600 22px '+FONT;x.fillText('enter',tl,tt);x.font='600 30px '+FONT;x.fillText('↵',px+hw-52,py+hh*.45);continue}
-    if(l==='backspace'){x.font='600 22px '+FONT;x.fillText('backspace',tl,tt);x.font='600 30px '+FONT;x.fillText('←',tl,py+hh*.45);continue}
-    if(WORD[l]){x.font=(k.h<.3?'600 20px ':'600 22px ')+FONT;x.fillText(WORD[l],tl,k.h<.3?py:tt);continue}
-    if(SH[l]){x.font='600 31px '+FONT;x.fillText(SH[l],tl,tt+2);x.font='600 38px '+FONT;x.fillText(l,tl,py+hh*.38);continue}
-    x.font='600 50px '+FONT;x.textAlign='center';x.fillText(l.toUpperCase(),px,py+3)}
+    if(/^f\d+$/.test(l)){x.font='500 18px '+FONT;x.fillText(l,tl,tt-2);icon(l,px,py+4);continue}
+    if(l==='insert'||l==='einfg'){x.font='500 18px '+FONT;x.fillText('f10',tl,tt-2);x.font='500 20px '+FONT;x.textAlign='center';x.fillText(l,px,py+4);continue}
+    if(l==='shift'){x.font='500 22px '+FONT;x.fillText(k.x<0?'shift ⇧':'⇧ shift',tl,tt);continue}
+    if(l==='enter'){x.font='500 22px '+FONT;x.fillText('enter',tl,tt);x.font='500 30px '+FONT;x.fillText('↵',px+hw-52,py+hh*.45);continue}
+    if(l==='backspace'){x.font='500 22px '+FONT;x.fillText('backspace',tl,tt);x.font='500 30px '+FONT;x.fillText('←',tl,py+hh*.45);continue}
+    if(WORD[l]){x.font=(k.h<.3?'500 20px ':'500 22px ')+FONT;x.fillText(WORD[l],tl,k.h<.3?py:tt);continue}
+    if(SH[l]){x.font='500 31px '+FONT;x.fillText(SH[l],tl,tt+2);x.font='500 38px '+FONT;x.fillText(l,tl,py+hh*.38);continue}
+    x.font='500 50px '+FONT;x.textAlign='center';x.fillText(l.toUpperCase(),px,py+3)}
   return tex(cv)}
 /* ------------------------------------------------------------------ part registry */
-function reg(o){(o.parent||root).add(o.g);o.off=o.off||[0,0,0];if(!o.parent)o.g.scale.set(6.4/W,KY,.935);parts.push(o);return o}
+function reg(o){(o.parent||root).add(o.g);o.off=o.off||[0,0,0];if(!o.parent)o.g.scale.set(6.4/W,KY,4.13/D);parts.push(o);return o}
 function finalize(){
   for(const p of parts){p.g.traverse(o=>{if(!o.isMesh)return;o.material=o.material.clone();const m=o.material;
     m.userData={tr0:m.transparent,op0:m.opacity,dw0:m.depthWrite};o.castShadow=!m.transparent;o.receiveShadow=true;o.userData.part=p})}
@@ -228,8 +229,8 @@ function finalize(){
 function buildBottom(c){
   const b=BAT[c.bat],g=new THREE.Group();
   g.add(plateMesh(MT.silver2));
-  g.add(skirt(rrShape(0,PCZ,2*PHW,PZ1-PZ0,.15),()=>.02,rrShape(0,0,W,D,.2),YOUT,MT.silver2));
-  g.add(skirt(rrShape(0,0,W,D,.2),YOUT,rrShape(0,0,W,D,.2),YS,MT.silver2));
+  g.add(skirt(notchedDeck(0,PCZ,2*PHW,PZ1-PZ0,.15,5.0,0),()=>.02,notchedDeck(0,0,W,D,.2,5.0,.25),YOUT,MT.silver2));
+  g.add(skirt(notchedDeck(0,0,W,D,.2,5.0,.25),YOUT,notchedDeck(0,0,W,D,.2,5.0,.25),YS,MT.silver2));
   
   // vent: 4.0 × 1.04 units, centred 68 mm from the rear (guide p.14)
   const vc=canvas(1024,224),vx=vc.getContext('2d');vx.fillStyle='#aeb2b7';vx.fillRect(0,0,1024,224);vx.fillStyle='#14171a';
@@ -241,8 +242,8 @@ function buildBottom(c){
   g.add(label(new THREE.Mesh(drape(new THREE.PlaneGeometry(1.5,.19,1,2).rotateX(Math.PI/2).translate(-.45,0,1.5)),new THREE.MeshBasicMaterial({map:tex(lc),transparent:true,depthWrite:false})),'Printed regulatory markings'));
   const rub=std(0x3b3c3f,.2,.65);
   const strip=(w,d,z)=>drape(new THREE.PlaneGeometry(w,d,1,8).rotateX(Math.PI/2).translate(0,0,z));
-  g.add(label(new THREE.Mesh(mergeGeometries([strip(6.0,.14,-1.905),strip(5.9,.12,1.71)]),rub),'Rubber strips (front and rear)'));
-  const s=[];for(const[x,z]of[[-2.78,-1.685],[0,-1.685],[2.78,-1.685],[-.83,.486],[.83,.486]])s.push(cylG(.05,.014,x,bU(z)-.006,z,'y',16));
+  g.add(label(new THREE.Mesh(mergeGeometries([strip(6.0,.14,-1.65),strip(5.9,.12,1.71)]),rub),'Rubber strips (front and rear)'));
+  const s=[];for(const[x,z]of[[-2.78,-1.5],[0,-1.5],[2.78,-1.5],[-.83,.55],[.83,.55]])s.push(cylG(.05,.014,x,bU(z)-.006,z,'y',16));
   g.add(label(merge(s,MT.steel),'Five captive Phillips screws'));
   return reg({id:'bottom',name:'Bottom cover',cat:'Base',tag:'CSR',pn:b.cover,g,off:[0,-1.35,0],pg:'38–39',
     desc:`Aluminium lower enclosure for ${b.cname} models. 5 captive screws; the underside vent is ~200 × 52 mm.`,
@@ -282,10 +283,10 @@ function buildBoard(c){
   g.add(label(box(.4,.04,.08,-2.55,.255,.84,MT.black),'M.2 socket (WWAN)'));
   const zif=[],fl=[];for(const[x,z]of[[-.5,.5],[.4,.5],[1.1,.52],[-1.2,-1.85],[1.0,-1.75],[2.2,-.9],[-2.65,.1]]){zif.push(bx(.28,.03,.07,x,.262,z));fl.push(bx(.28,.012,.05,x,.246,z))}
   g.add(label(merge(zif,MT.zif),'ZIF connectors — touchpad, keyboard, display, fingerprint, USB board cables'));g.add(merge(fl,MT.flap));
-  const R=[['USB SuperSpeed 5 Gbps',-.83,.28,.155,.258],['USB SuperSpeed 5 Gbps with HP Sleep and Charge',-1.22,.28,.155,.258],['USB Type-C — power in, 10 Gbps, DisplayPort out',-1.57,.2,.117,.245],['HDMI 2.1',-.42,.28,.135,.262]];
+  const R=[['USB SuperSpeed 5 Gbps',-.77,.23,.155,.258],['USB SuperSpeed 5 Gbps with HP Sleep and Charge',-1.08,.23,.155,.258],['USB Type-C — power in, 10 Gbps, DisplayPort out',-1.42,.2,.117,.245],['HDMI 2.1',-.45,.27,.135,.262]];
   for(const[t,z,zl,yl,y]of R){g.add(label(box(.4,yl,zl,2.99,y,z,MT.steel),t));g.add(box(.01,yl*.7,zl*.85,3.185,y,z,MT.black))}
-  g.add(label(rcyl(.06,.4,2.99,.252,-.075,MT.steel),'Audio-out / audio-in combo jack'));
-  g.add(label(rcyl(.013,.02,3.17,.25,-1.75,MT.led),'Battery light — white >90%, amber 0–90%'));
+  g.add(label(rcyl(.06,.4,2.99,.252,-.25,MT.steel),'Audio-out / audio-in combo jack'));
+  g.add(label(rcyl(.013,.02,3.17,.25,-1.65,MT.led),'Battery light — white >90%, amber 0–90%'));
   return reg({id:'board',name:'System board',cat:'Main board & cooling',tag:'ASP',pn:(()=>{const p=cpu.pn,k=c.wwan?'wwan':(c.cam==='ir'?'ir':'base');return (p[k]||p.base)+' (-001 / -601 Windows)'})(),g,off:[0,.72,0],pg:'56–58',
     desc:`${cpu.name} — ${cpu.spec}. Integrated Radeon graphics; processor is soldered. Carries 2 SODIMM sockets, M.2 sockets and the right-side ports (SIM, audio, HDMI, 2× USB-A, USB-C). Kit includes replacement thermal material.`+(c.cpu==='r3'&&(c.wwan||c.cam==='ir')?' <b>Note:</b> the guide lists no Ryzen 3 board with WWAN or 5 MP IR.':''),
     svc:'<b>Remove:</b> bottom cover, battery, fan first. Disconnect antenna, power, speaker, display, USB, touchpad, keyboard, backlight and fingerprint cables — <b>never disconnect the RTC cable</b>. Remove the port bracket (3 × M2.5×4.0), then 2 × M2.0×2.5 screws, lift the side and slide out. Transfer memory, WLAN/WWAN, SSD and heat sink to the new board.'})}
@@ -398,23 +399,28 @@ function buildFp(c){if(!c.fp)return;const g=new THREE.Group();
     desc:'Palmrest fingerprint reader (select models). Bracket N02964-001, cable in Cable Kit N00097-001; a blank insert is in Plastics Kit N38997-001.',
     svc:'<b>Remove:</b> bottom cover, battery cable, WWAN module → unplug ZIF cable → remove 1 × M2.0×2.5 screw and the bracket → lift the board out.'})}
 
+// deck outline with a rectangular cutout in the middle of the rear edge (leaving a tab at each corner) where the hinge cover sits
+function notchedDeck(cx,cz,w,d,r,nw,nd){const x0=cx-w/2,x1=cx+w/2,y0=-cz-d/2,y1=-cz+d/2,p=new THREE.Shape(),nx=nw/2;
+  p.moveTo(x0+r,y0);p.lineTo(x1-r,y0);p.absarc(x1-r,y0+r,r,-Math.PI/2,0,false);const q=Math.min(r,.03);p.lineTo(x1,y1-q);p.absarc(x1-q,y1-q,q,0,Math.PI/2,false);
+  p.lineTo(nx,y1);p.lineTo(nx,y1-nd);p.lineTo(-nx,y1-nd);p.lineTo(-nx,y1);
+  p.lineTo(x0+q,y1);p.absarc(x0+q,y1-q,q,Math.PI/2,Math.PI,false);p.lineTo(x0,y0+r);p.absarc(x0+r,y0+r,r,Math.PI,Math.PI*1.5,false);return p}
 function buildTop(c){const g=new THREE.Group(),keys=keyLayout(c.kb);
-  const deck=rrShape(0,0,W,D,.2);deck.holes.push(rrHole(0,KZC,KW,KD,.06),rrHole(.02,1.3665,2.37,1.39,.06));if(c.fp)deck.holes.push(rrHole(2.75,.74,.23,.25,.03));
+  const deck=notchedDeck(0,0,W,D,.2,5.0,.22);deck.holes.push(rrHole(0,KZC,KW,KD,.06),rrHole(.02,1.3665,2.37,1.39,.06));if(c.fp)deck.holes.push(rrHole(2.75,.74,.23,.25,.03));
   g.add(slabXZ(deck,.05,.34,MT.silver,.01));
-  const ring=rrShape(0,0,W,D,.2);ring.holes.push(rrHole(0,0,W-.1,D-.1,.16));g.add(skirt(rrShape(0,0,W,D,.2),YS,rrShape(0,0,W,D,.2),()=>.355,MT.silver));
+  const ring=rrShape(0,0,W,D,.2);ring.holes.push(rrHole(0,0,W-.1,D-.1,.16));g.add(skirt(notchedDeck(0,0,W,D,.2,5.0,.22),YS,notchedDeck(0,0,W,D,.2,5.0,.22),()=>.355,MT.silver));
   g.add(slabXZ(rrShape(0,KZC,KW+.04,KD+.04,.07),.012,.348,std(0xaeb3b8,.4,.5)));
   g.add(label(merge(keys.map(k=>keycap(k.w,k.h,k.x,k.z)),MT.key),c.backlit?'Backlit, spill-resistant keyboard':'Spill-resistant keyboard (not backlit)'));
   const lg=new THREE.Mesh(new THREE.PlaneGeometry(KW,KD).rotateX(-Math.PI/2).translate(0,.4205,KZC),new THREE.MeshBasicMaterial({map:keyboardTexture(keys,c.backlit),transparent:true,depthWrite:false}));g.add(lg);
   if(c.backlit){
     const kc=canvas(KW*220,KD*220),kx=kc.getContext('2d'),S1=220,pad=.018;
-    kx.filter='blur(7px)';kx.fillStyle='rgba(110,185,255,1)';
+    kx.filter='blur(7px)';kx.fillStyle='rgba(50,150,255,1)';
     for(const k of keys)kx.fillRect((k.x+KW/2-k.w/2-pad)*S1,(k.z-(KZC-KD/2)-k.h/2-pad)*S1,(k.w+2*pad)*S1,(k.h+2*pad)*S1);
     const add={transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:false};
-    g.add(new THREE.Mesh(new THREE.PlaneGeometry(KW,KD).rotateX(-Math.PI/2).translate(0,.3625,KZC),new THREE.MeshBasicMaterial({map:tex(kc),opacity:.4,...add})));
+    g.add(new THREE.Mesh(new THREE.PlaneGeometry(KW,KD).rotateX(-Math.PI/2).translate(0,.3625,KZC),new THREE.MeshBasicMaterial({map:tex(kc),opacity:.2,...add})));
     const src=lg.material.map.image,gc=canvas(src.width,src.height),gx=gc.getContext('2d');
-    gx.filter='blur(10px) brightness(1.4) sepia(1) hue-rotate(160deg) saturate(2.2)';gx.drawImage(src,0,0);gx.filter='none';
+    gx.filter='blur(8px) brightness(1.1) sepia(1) hue-rotate(170deg) saturate(3)';gx.drawImage(src,0,0);gx.filter='none';
     const gt=tex(gc);
-    g.add(new THREE.Mesh(new THREE.PlaneGeometry(KW,KD).rotateX(-Math.PI/2).translate(0,.4212,KZC),new THREE.MeshBasicMaterial({map:gt,opacity:.9,...add})));
+    g.add(new THREE.Mesh(new THREE.PlaneGeometry(KW,KD).rotateX(-Math.PI/2).translate(0,.4212,KZC),new THREE.MeshBasicMaterial({map:gt,opacity:.75,...add})));
   }
   {const cv=canvas(2048,96),x=cv.getContext('2d');x.fillStyle='#c3c7cb';x.fillRect(0,0,2048,96);x.fillStyle='#5f656b';
     for(let r=0;r<14;r++)for(let k=0;k<340;k++){x.beginPath();x.arc(4+k*6+(r%2?3:0),4+r*6.6,1.5,0,7);x.fill()}
@@ -422,8 +428,8 @@ function buildTop(c){const g=new THREE.Group(),keys=keyLayout(c.kb);
   if(c.sticker){const cv=canvas(160,80),x=cv.getContext('2d');x.fillStyle='#eef3f8';x.fillRect(0,0,160,80);x.fillStyle='#2f7fd0';for(const[a,b]of[[10,10],[36,10],[10,36],[36,36]])x.fillRect(a,b,24,24);x.fillStyle='#556';x.fillRect(74,14,70,8);x.fillRect(74,32,52,8);x.fillRect(74,50,64,8);
     g.add(label(new THREE.Mesh(new THREE.PlaneGeometry(.42,.21).rotateX(-Math.PI/2).translate(-1.7,.4006,.58),new THREE.MeshBasicMaterial({map:tex(cv)})),'Windows / CPU sticker'))}
   g.add(label(merge([bx(.62,.025,.16,-2.8,.402,-2.0),bx(.62,.025,.16,2.8,.402,-2.0)],MT.silver2),'Hinge side plates'));
-  const RP=[['Power connector — AC smart-pin adapter',-1.91,.105,.256,1],['Battery light',-1.75,.026,.25,1],['USB Type-C power / 10 Gbps / DisplayPort',-1.57,.2,.117,.245],['USB SuperSpeed 5 Gbps with HP Sleep and Charge',-1.22,.28,.155,.258],
-    ['USB SuperSpeed 5 Gbps',-.83,.28,.155,.258],['HDMI 2.1',-.42,.28,.135,.262],['Audio-out / audio-in combo jack',-.075,.097,.252,1]];
+  const RP=[['Power connector — AC smart-pin adapter',-1.91,.105,.256,1],['Battery light',-1.65,.026,.25,1],['USB Type-C power / 10 Gbps / DisplayPort',-1.42,.2,.117,.245],['USB SuperSpeed 5 Gbps with HP Sleep and Charge',-1.08,.23,.155,.258],
+    ['USB SuperSpeed 5 Gbps',-.77,.23,.155,.258],['HDMI 2.1',-.45,.27,.135,.262],['Audio-out / audio-in combo jack',-.25,.097,.252,1]];
   if(c.wwan){g.add(label(box(.012,.03,.22,W/2+.004,.256,.247,MT.black),'Right side — nano-SIM tray slot (LTE models)'));g.add(label(box(.014,.016,.2,W/2+.006,.256,.247,MT.steel),'Right side — nano-SIM tray slot (LTE models)'))}
   for(const[t,z,zl,a,b]of RP){if(b===1){g.add(label(rcyl(zl/2+.012,.012,W/2+.002,a,z,MT.steel),'Right side — '+t));g.add(label(rcyl(zl/2,.014,W/2+.004,a,z,MT.black),'Right side — '+t))}else if(t.startsWith('USB Type-C')){g.add(label(new THREE.Mesh(new THREE.PlaneGeometry(.2,.105).rotateY(Math.PI/2).translate(W/2+.006,b,z),new THREE.MeshBasicMaterial({map:usbcTex(),transparent:true,depthWrite:false})),'Right side — '+t))}else g.add(label(box(.012,a,zl,W/2+.004,b,z,MT.black),'Right side — '+t))}
   for(const[t,z,zl,yl,y]of[['Nano security-cable slot',-1.88,.113,.095,.256],['RJ-45 (network) jack',-1.31,.305,.2,.283],['USB SuperSpeed 5 Gbps powered port',-.85,.296,.15,.283]]){g.add(label(box(.012,yl,zl,-W/2-.004,y,z,MT.black),'Left side — '+t));if(zl===.305)g.add(label(box(.014,.12,.34,-W/2-.004,.12,z,MT.silver2),'RJ-45 drop-down door'))}
@@ -440,14 +446,26 @@ function buildLid(c){
   const lid=new THREE.Group(),P=PANEL[c.panel],Wl=6.4,Hl=3.98,cy=1.99,pcy=1.99;lid.name='lid';
   const mk=o=>reg({...o,parent:lid,cat:'Display assembly',tag:'ASP'});
   // back cover
-  let g=new THREE.Group();g.add(slabXY(rrShapeXYTop(0,cy,Wl,Hl,.18),.02,-.125,MT.silver));
-  {const hc=std(0xb4babf,.75,.3),pr=new THREE.Shape();pr.moveTo(0,-.03);pr.lineTo(.17,-.03);pr.quadraticCurveTo(.215,.0,.215,.075);pr.lineTo(.2,.15);pr.lineTo(.02,.17);pr.lineTo(0,.17);pr.closePath();
-    const eg=new THREE.ExtrudeGeometry(pr,{depth:4.71,bevelEnabled:false,curveSegments:10});eg.rotateY(-Math.PI/2);eg.translate(2.355,0,0);
-    const m=new THREE.Mesh(eg,hc);const HD=.15;m.position.set(0,-HD,-.01);g.add(label(m,'Hinge cover'));
-    g.add(box(4.71,.012,.02,0,.04-HD,.205,std(0xffffff,.2,.25)));g.add(box(4.71,.02,.03,0,-.035-HD,.01,MT.black))}
-  const ring=rrShapeXYTop(0,cy,Wl,Hl,.18);ring.holes.push(rrHoleXY(0,cy,Wl-.14,Hl-.14,.12));g.add(slabXY(ring,.075,-.105,MT.silver));
+  let g=new THREE.Group();g.add(slabXY(rrShapeXYTop(0,cy-.075,Wl,Hl+.15,.18),.02,-.125,MT.silver));
+  {const hc=std(0xb4babf,.75,.3),pr=new THREE.Shape();
+    // side profile (from the reference drawing): a "⊃" block fixed to the bottom of the lid, flush with the lid's back face and reaching toward the screen side, chamfered at the free end. Shape x = depth along lid z, shape y = along the lid face.
+    pr.moveTo(0,-.15);pr.lineTo(.27,-.15);pr.lineTo(.3,-.12);pr.lineTo(.3,-.11);pr.lineTo(.27,-.08);pr.lineTo(0,-.08);pr.closePath();
+    const eg=new THREE.ExtrudeGeometry(pr,{depth:4.96,bevelEnabled:false});eg.rotateY(-Math.PI/2);eg.translate(2.48,0,0);
+    const hg=new THREE.Group();hg.position.set(0,0,-.125);g.add(hg);
+    const m=new THREE.Mesh(eg,hc);hg.add(label(m,'Hinge cover'));
+    hg.add(box(4.96,.008,.02,0,-.08,.2,std(0xffffff,.2,.25)));hg.add(box(4.96,.012,.02,0,-.092,.03,MT.black));
+    // pivot pins at both ends of the cover, at the centre of its cross-section (lid-local y=.005, z=.17: see PIVOT_Z in layout())
+    for(const s of[-1,1])hg.add(cyl(.035,.03,s*2.49,-.115,.2,MT.steel,'x'));
+    // 'PROBOOK' print on the rear-facing edge (visible from behind with the lid closed)
+    {const pc=canvas(1024,64),px=pc.getContext('2d');px.clearRect(0,0,1024,64);px.fillStyle='#5d636a';px.font='500 40px system-ui,sans-serif';px.textBaseline='middle';px.textAlign='center';px.letterSpacing='14px';px.fillText('PROBOOK',512,34);
+      hg.add(new THREE.Mesh(new THREE.PlaneGeometry(1.0,.0625).rotateX(Math.PI/2).rotateY(Math.PI).translate(0,-.1505,.15),new THREE.MeshBasicMaterial({map:tex(pc),transparent:true,depthWrite:false})))}
+    // retaining clips along the lid-side edge that snap into the back cover
+    {const cl=[];for(const x of[-2.2,-1.7,-1.1,-.5,.15,.75,1.35,1.9,2.2])cl.push(bx(.1,.04,.05,x,-.06,.05));hg.add(merge(cl,hc))}}
+  const ring=rrShapeXYTop(0,cy-.075,Wl,Hl+.15,.18);ring.holes.push(rrHoleXY(0,cy,Wl-.14,Hl-.14,.12));g.add(slabXY(ring,.075,-.105,MT.silver));
   const lmg=new THREE.PlaneGeometry(.85,.85,28,28);{const P=lmg.attributes.position;for(let i=0;i<P.count;i++){const r2=(P.getX(i)**2+P.getY(i)**2)/(.425*.425);P.setZ(i,.012*Math.max(0,1-r2))}lmg.computeVertexNormals()} // slightly domed, like a polished badge
-  const lm=new THREE.Mesh(lmg.rotateY(Math.PI).translate(0,pcy+.02,-.1262),new THREE.MeshStandardMaterial({map:logoMirror(),color:0xffffff,metalness:1,roughness:.04,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2}));lm.userData.mirror=true;g.add(lm);
+  const lm=new THREE.Mesh(lmg.rotateY(Math.PI).translate(0,pcy+.02,-.1262),new THREE.MeshStandardMaterial({map:logoMirror(),color:0xffffff,metalness:1,roughness:.02,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2}));lm.userData.mirror=true;g.add(lm);
+  g.add(new THREE.Mesh(new THREE.RingGeometry(.408,.432,72).rotateY(Math.PI).translate(0,pcy+.02,-.1259),std(0x5f656b,.95,.28))); // thin dark chamfer around the polished badge
+// long shallow groove along the top edge of the lid back (a pale lip over a thin shadow line), as on the real part  g.add(label(box(4.6,.012,.003,0,3.925,-.1262,std(0xdde1e5,.6,.35)),'Top-edge groove'));g.add(box(4.6,.006,.002,0,3.911,-.1262,std(0x7d8389,.5,.5)));
   const bc=c.wwan?'N01279-001':(c.cam==='ir'?(P.nits===400?'N38998-001':'N39001-001'):(P.nits===400?'N38999-001':'N39000-001'));
   mk({id:'d-back',name:'Display back cover',g,off:[0,0,-1.0],pn:bc,pg:'62–68',desc:`Lid shell with integrated antenna bonding and bezel adhesive. Variant for ${P.nits} nit panel${c.cam==='ir'?' + 5 MP IR camera':''}${c.wwan?' + WWAN':''}.`,svc:'<b>Remains</b> after the bezel, panel, hinges, cables and antennas have been removed. (Guide p.68 text and Table 3-2 disagree on N39000/N39001; Table 3-2 is used.)'});
   // hinges
@@ -480,15 +498,16 @@ function buildLid(c){
   g.add(new THREE.Mesh(new THREE.PlaneGeometry(.14,.14).translate(0,.125,.0015),new THREE.MeshBasicMaterial({map:logoOfficial(),transparent:true,depthWrite:false})));
   if(c.cam!=='none'){
     // real webcam: a dark lens sunk into the black bezel, barely visible, with a faint blue-violet coating glint
-    g.add(cyl(.038,.003,0,3.850,.0015,std(0x0c0d10,.5,.4),'z'));
-    g.add(cyl(.028,.005,0,3.850,.003,std(0x020308,.95,.08,{envMapIntensity:1.6}),'z'));
-    g.add(cyl(.013,.006,0,3.850,.0035,std(0x161a3a,.9,.1,{envMapIntensity:2}),'z'));
-    g.add(cyl(.004,.006,.19,3.850,.003,std(0x0a0c0e,.3,.5),'z'));
+    g.add(cyl(.026,.003,0,3.850,.0015,std(0x0c0d10,.5,.4),'z'));
+    g.add(cyl(.019,.005,0,3.850,.003,std(0x020308,.95,.08,{envMapIntensity:1.6}),'z'));
+    g.add(cyl(.009,.006,0,3.850,.0035,std(0x161a3a,.9,.1,{envMapIntensity:2}),'z'));
+    g.add(cyl(.003,.006,.14,3.850,.003,std(0x0a0c0e,.3,.5),'z'));
 
-    if(c.cam==='ir'){g.add(cyl(.03,.006,-.17,3.850,.003,MT.glass,'z'));g.add(cyl(.012,.006,.17,3.850,.003,std(0x5a0f14,.1,.3),'z'))}
-    g.add(box(.22,.016,.005,0,3.9,.0025,std(0x16171a,.1,.7)))}
+    if(c.cam==='ir'){g.add(cyl(.022,.006,-.13,3.850,.003,MT.glass,'z'));g.add(cyl(.009,.006,.13,3.850,.003,std(0x5a0f14,.1,.3),'z'))}
+    }
+  g.add(label(box(.22,.012,.006,0,3.972,.003,std(0x16171a,.1,.7)),'Webcam privacy shutter slider'));
   mk({id:'d-bezel',name:'Display bezel',g,off:[0,0,1.2],pn:BEZEL[P.fhd?'fhd':'hd'][c.cam],pg:'62',desc:`Narrow bezel for ${P.fhd?'FHD':'HD'} models ${c.cam==='none'?'without a camera':c.cam==='hd'?'with HD camera':'with 5 MP/IR camera'}.`,svc:'<b>Remove:</b> flex the top, then left and right sides, then bottom to release the clips and lift off. Refit by pressing bottom, sides, then top.'});
-  lid.userData.base=V(0,.224,-2.0);lid.userData.off=V(0,0,-2.2);lid.scale.z=.75;root.add(lid);return lid}
+  lid.userData.base=V(0,.163,-2.0125);lid.userData.off=V(0,0,-2.2);lid.scale.z=.75;root.add(lid);return lid}
 
 /* ------------------------------------------------------------------ assemble */
 const c = cfg
@@ -504,11 +523,14 @@ const _b = new THREE.Box3()
 const centre = p => _b.setFromObject(p.g).getCenter(new THREE.Vector3())
 let restCentres = null
 /** Places every part at `t` (0 = assembled, 1 = fully exploded) and opens the lid to `lidDeg` degrees. */
+const LID_LEN = .975   // trims the top of the lid (and top bezel) so the lid ends level with the base front
 function layout(t, lidDeg = 100){
   lid.position.copy(lid.userData.base).addScaledVector(lid.userData.off,t)
   lid.rotation.x = -(lidDeg-90)*Math.PI/180
+  // the pivot is the centre of the hinge cover, at lid-local (y -.115, z .075): offset so the lid turns about that point
+  {const py=-.115*LID_LEN,pz=.075*lid.scale.z,th=lid.rotation.x,cs=Math.cos(th),sn=Math.sin(th);lid.position.y-=py*cs-pz*sn;lid.position.z-=py*sn+pz*cs}
   // as the lid comes to rest it settles onto the deck and tucks its hinge in, so closed means flush rather than hovering
-  {const u=Math.min(1,Math.max(0,lidDeg/14)),cf=1-u*u*(3-2*u);lid.position.y-=.05*cf*(1-t);lid.position.z+=.1*cf*(1-t)}
+  {const u=Math.min(1,Math.max(0,lidDeg/14)),cf=1-u*u*(3-2*u);lid.position.y+=.016*cf*(1-t);lid.scale.y=LID_LEN*(1+.016*cf*(1-t))}
   for(const p of parts)p.g.position.set(p.off[0]*t,p.off[1]*t,p.off[2]*t)
   root.updateMatrixWorld(true)
 }

@@ -22,9 +22,12 @@ export function webglAvailable() {
  * build on this; they only differ in how they drive the camera and `laptop.layout`.
  */
 export function createStage(host: HTMLElement) {
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' })
   // supersample for crisp edges, but cap the total pixel count so large or high-density screens stay smooth
-  const pixelRatio = (w: number, h: number) => Math.max(1, Math.min(2, Math.max(window.devicePixelRatio, 1.5), Math.sqrt(3_600_000 / (w * h))))
+  // (phones and tablets also cap lower: a coarse pointer means a smaller GPU budget)
+  const lowPower = window.matchMedia?.('(pointer: coarse)').matches ?? false
+  const pixelRatio = (w: number, h: number) =>
+    Math.max(1, Math.min(lowPower ? 1.5 : 2, Math.max(window.devicePixelRatio, 1.25), Math.sqrt((lowPower ? 1_800_000 : 2_800_000) / (w * h))))
   renderer.outputColorSpace = THREE.SRGBColorSpace
   renderer.toneMapping = THREE.ACESFilmicToneMapping
   renderer.shadowMap.enabled = true
@@ -47,7 +50,7 @@ export function createStage(host: HTMLElement) {
   const sun = new THREE.DirectionalLight(0xffffff, 2.2)
   sun.position.set(6, 12, 8)
   sun.castShadow = true
-  sun.shadow.mapSize.set(2048, 2048)
+  sun.shadow.mapSize.set(1024, 1024)
   Object.assign(sun.shadow.camera, { left: -11, right: 11, top: 11, bottom: -11, near: 1, far: 40 })
   sun.shadow.bias = -0.0004
   scene.add(sun, new THREE.HemisphereLight(0xbcd8ee, 0x10161d, 0.6))
